@@ -1,13 +1,11 @@
 from db import db
-from models import Problem, ProblemTest
+from models.problem import Problem
+
 
 class ProblemService(object):
 
-    def create_exercise(self, name, description, tip, tests):
+    def create_problem(self, name, description, tip):
         problem = Problem(name=name, description=description, tip=tip)
-        problem.add_tests(tests)
-        db.session.add(problem)
-        db.session.commit()
         return problem
 
     def get_exercise_by_key(self, key):

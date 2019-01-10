@@ -1,4 +1,4 @@
-from models import Problem, ProblemTest
+from models.problem import Problem, ProblemTest
 
 
 def test_problem_create_no_tests():
@@ -7,6 +7,7 @@ def test_problem_create_no_tests():
     assert problem.description == "testdescription"
     assert problem.tip == "tiptest"
     assert len(problem.tests) == 0
+
 
 def test_problemtest_create():
     test = ProblemTest(name="testname", tip="testtip", input="2", output="3")

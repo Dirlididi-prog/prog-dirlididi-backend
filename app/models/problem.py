@@ -6,10 +6,10 @@ class ProblemTest(db.Model):
     ''' Represents a test for a problem '''
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(50))
     tip = db.Column(db.String(50), nullable=True)
-    input = db.Column(db.String(50), nullable=False)
-    output = db.Column(db.String(50), nullable=False)
+    input = db.Column(db.String(50))
+    output = db.Column(db.String(50))
     problem = db.Column(db.String(9), db.ForeignKey('problem.key'), nullable=False)
 
     api_fields = {
@@ -17,7 +17,6 @@ class ProblemTest(db.Model):
         "tip":fields.String,
         "input": fields.String,
         "output": fields.String,
-
     }
     
 
@@ -29,6 +28,7 @@ class Problem(db.Model):
     description = db.Column(db.Text, nullable=False)
     tip = db.Column(db.String(50), nullable=True)
     tests = db.relationship('ProblemTest')
+    owner = db.Column(db.Integer, db.ForeignKey('user._id'), nullable=False)
 
     api_fields = {
         "key": fields.String,
