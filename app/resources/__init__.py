@@ -19,6 +19,7 @@ class ProblemDetail(Resource):
 class ProblemList(Resource):
 
     user_service = UserService()
+    problem_service = ProblemService()
 
     @marshal_with(Problem.api_fields)
     def get(self):
@@ -37,8 +38,6 @@ class ProblemList(Resource):
         tip = data.get('tip')
         tests = data.get('tests')
         publish = data.get('publish')
-
-        print(publish)
 
         return self.user_service.add_problem(user_id, name, description, tip, publish, tests)
 

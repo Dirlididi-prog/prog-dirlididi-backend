@@ -11,7 +11,7 @@ def user(clear_db_data):
 
 
 def test_user_add_problem(user):
-    user.add_problem(name="Hello World!", description="Make your Python script print 'Hello World!' on the screen", tests=[{
+    user.add_problem(name="Hello World!", description="Make your Python script print 'Hello World!' on the screen", publish=True, tip=None, tests=[{
         "output": "Hello World!"
     }])
     assert len(user.owned_problems) == 1

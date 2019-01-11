@@ -1,5 +1,11 @@
 # Dirlididi API
 
+## Populate db
+In order to populate the database, run the app with `python app.py` or `docker-compose up`, navigate to `/dev` folder and run `populate_db.py`. In resume:
+
+    docker-compose up -d
+    cd dev && python populate_db.py
+
 ## Endpoints
 
 | Method | Endpoint     | Entry                    | Result                 |
