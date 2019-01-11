@@ -21,6 +21,6 @@ class UserService(object):
     def get_user_by_email(self, email):
         return User.query.filter_by(email=email).first()
     
-    def add_problem(self, id, name, description, tip, tests):
+    def add_problem(self, id, name, description, tip, publish, tests):
         user = User.query.get(id)
-        return user.add_problem(name, description, tip, tests)
+        return user.add_problem(name, description, tip, publish, tests)

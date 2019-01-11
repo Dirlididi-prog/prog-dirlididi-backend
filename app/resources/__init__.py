@@ -36,8 +36,11 @@ class ProblemList(Resource):
         description = data.get('description')
         tip = data.get('tip')
         tests = data.get('tests')
+        publish = data.get('publish')
 
-        return self.user_service.add_problem(user_id, name, description, tests, tip)
+        print(publish)
+
+        return self.user_service.add_problem(user_id, name, description, tip, publish, tests)
 
 
 class UserAuth(Resource):
