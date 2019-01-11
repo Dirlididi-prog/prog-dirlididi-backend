@@ -14,12 +14,10 @@ with open('populate_data.json') as f:
     problems = json.loads(f.read())
 
 
-
-for key in [problem['key'] for problem in problems]:
-    problem_data = requests.get('http://dirlididi.com/api/problem/{}'.format(key)).json()
-    print(key)
+for problem in problems:
+    print(problem['key'])
     requests.post('http://localhost:5000/problem', headers={"Authorization": "Bearer {}".format(jwt)},
-        json=problem_data)
+        json=problem)
 
 if len(requests.get('http://localhost:5000/problem').json()) == len(problems):
     print("Database populated successfully.")
