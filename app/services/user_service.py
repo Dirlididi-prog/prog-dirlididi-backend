@@ -21,6 +21,14 @@ class UserService(object):
     def get_user_by_email(self, email):
         return User.query.filter_by(email=email).first()
     
+    def get_user_by_token(self, token):
+        return User.query.filter_by(token=token).first()
+    
     def add_problem(self, id, name, description, tip, publish, tests):
         user = User.query.get(id)
         return user.add_problem(name, description, tip, publish, tests)
+
+    def try_solution(self, user_token, test_key, code, tests):
+        ''' Registers and returns a solution '''
+        user = self.get_user_by_token(user_token)
+        return user.try_solution(test_key, code, tests)

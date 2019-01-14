@@ -16,3 +16,4 @@ In order to populate the database, run the app with `python app.py` or `docker-c
 | POST | /auth | email, password | Authenticates a user and returns JWT token |
 | POST | /user | email, password | Creates and returns a User |
 | GET | /user | JWT Authorization header | Returns user information |
+| POST | /solve | (User) token, (Problem) key, code, tests | Registers and returns a solution for a problem |

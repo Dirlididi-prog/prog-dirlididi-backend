@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource, marshal_with
 from flask_jwt_extended import create_access_token
-from models.problem import Problem
+from models.problem import Problem, Solution
 from models.user import User
 from services.problem_service import ProblemService
 from services.user_service import UserService
@@ -13,7 +13,7 @@ class ProblemDetail(Resource):
 
     @marshal_with(Problem.api_fields)
     def get(self, key):
-        return self.problem_service.get_exercise_by_key(key)
+        return self.problem_service.get_problem_by_key(key)
 
 
 class ProblemList(Resource):
@@ -83,3 +83,18 @@ class UserDetail(Resource):
         email = data.get('email')
         password = data.get('password')
         return self.user_service.create_user(email, password)
+
+
+class SolveProblem(Resource):
+
+    user_service = UserService()
+
+    @marshal_with(Solution.api_fields)
+    def post(self):
+        data = request.get_json()
+        user_token = data.get('token')
+        test_key = data.get('key')
+        code = data.get('code')
+        tests = data.get('tests')
+        solution = self.user_service.try_solution(user_token, test_key, code, tests)
+        return solution

@@ -8,10 +8,11 @@ class User(db.Model):
     ''' Represents a User '''
 
     _id = db.Column(db.Integer, primary_key=True)
-    token = db.Column(db.String, default=key_generator, nullable=False)
+    token = db.Column(db.String, default=key_generator, nullable=False, unique=True)
     email = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
     owned_problems = db.relationship('Problem')
+    solutions = db.relationship('Solution')
 
     problem_service = ProblemService()
 
@@ -29,3 +30,6 @@ class User(db.Model):
         problem.add_tests(tests)
         db.session.commit()
         return problem
+
+    def try_solution(self, problem_key, code, tests):
+        return self.problem_service.create_solution(self, problem_key, code, tests)
