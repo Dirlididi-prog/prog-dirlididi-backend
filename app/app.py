@@ -3,7 +3,8 @@ from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from db import db
-from resources import ProblemDetail, ProblemList, UserAuth, UserDetail, SolveProblem
+from resources import ProblemDetail, ProblemList, UserAuth
+from resources import UserDetail, SolveProblem, CourseCRUD, CourseDetail
 
 app = Flask(__name__)
 api = Api(app)
@@ -16,6 +17,8 @@ api.add_resource(ProblemDetail, '/problem/<string:key>')
 api.add_resource(UserAuth, '/auth')
 api.add_resource(UserDetail, '/user')
 api.add_resource(SolveProblem, '/solve')
+api.add_resource(CourseCRUD, '/course')
+api.add_resource(CourseDetail, '/course/<int:id>')
 
 
 if __name__ == "__main__":

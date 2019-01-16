@@ -17,3 +17,7 @@ In order to populate the database, run the app with `python app.py` or `docker-c
 | POST | /user | email, password | Creates and returns a User |
 | GET | /user | JWT Authorization header | Returns user information |
 | POST | /solve | (User) token, (Problem) key, code, tests | Registers and returns a solution for a problem |
+| POST | /course | JWT Authorization header, name | Creates and returns a course |
+| GET | /course | JWT Authorization header | Returns all courses which the user is member |
+| GET| /course/<id:Integer> | | Returns a course by id |
+| POST | /course/<id:Integer> | JWT Authorization header | Assigns a user to a course, returns the course |
