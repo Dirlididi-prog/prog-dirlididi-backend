@@ -76,7 +76,7 @@ class Solution(db.Model):
     passed = db.Column(db.Boolean)
 
     api_fields = {
-        "tests": fields.List(fields.String),
+        "tests": {"key": fields.Integer, "output": fields.String},
         "code": fields.String,
         "result": fields.String,
         "passed": fields.Boolean,

@@ -18,24 +18,21 @@ class ProblemService(object):
         ''' Returns the test results for a solution '''
         result = ""
         problem = self.get_problem_by_key(problem)
-        tests = problem.tests
+        tests = sorted(problem.tests, key=lambda x: x._id)
+        results = sorted(results, key=lambda x: int(x.get('key')))
+        print ([(x._id, x.output) for x in tests])
+        print (results)
 
-        for user_result in results:
-            key = user_result[0]
-            user_result = user_result[1]
-            test = self.__get_test(tests, key)
-            if test.output == user_result:
-                result += "."
-            else:
-                result += "f"
-
+        for i in range(len(results)):
+            user_result = results[i]
+            key = user_result.get('key')
+            user_result = user_result.get('output')
+            if int(key) == tests[i]._id:
+                if tests[i].output == user_result:
+                    result += "."
+                else:
+                    result += "f"
         return result
-
-    def __get_test(self, tests, key):
-        for test in tests:
-            if int(test._id) == int(key):
-                return test
-        return None
 
     def create_solution(self, user, problem_key, code, tests):
         results = self.check_response(problem_key, tests)

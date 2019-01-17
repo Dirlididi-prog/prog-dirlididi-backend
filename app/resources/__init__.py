@@ -74,8 +74,8 @@ class UserDetail(Resource):
     @jwt_required
     @marshal_with(User.api_fields)
     def get(self):
-        email = get_jwt_identity()
-        user = self.user_service.get_user_by_email(email)
+        id = get_jwt_identity()
+        user = self.user_service.get_user_by_id(id)
         return user
 
     @marshal_with(User.api_fields)

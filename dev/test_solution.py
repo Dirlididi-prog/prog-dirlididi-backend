@@ -21,7 +21,9 @@ payload = {
     "key": problem['key'],
     "token": user['token'],
     "code": "print('Hello Dirlididi!')",
-    "tests": [([problem['tests'][i]['key'], problem['tests'][i]['output']]) for i in range(len(problem['tests']))]
+    "tests": [{"key": problem['tests'][i]['key'], 
+                    "output": problem['tests'][i]['output']} for i in range(len(problem['tests']))]
 }
-
+print (payload)
 print(authed_request(requests.post, 'http://localhost:5000/solve', payload, jwt).json())
+# print(problem['key'])

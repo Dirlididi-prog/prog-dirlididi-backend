@@ -6,7 +6,7 @@ user_payload = {
     "password": "010101"
 }
 
-requests.post('http://localhost:5000/user', json=user_payload)
+user = requests.post('http://localhost:5000/user', json=user_payload).json()
 
 jwt = requests.post('http://localhost:5000/auth', json=user_payload).json().get('jwt')
 
@@ -22,3 +22,4 @@ for problem in problems:
 if len(requests.get('http://localhost:5000/problem').json()) == len(problems):
     print("Database populated successfully.")
     print("{} problems loaded".format(len(problems)))
+    print("User token: {}".format(user['token']))
