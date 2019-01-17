@@ -1,8 +1,10 @@
 from flask import request
 from flask_restful import Resource, marshal_with
 from flask_jwt_extended import create_access_token
+from models.course import Course
 from models.problem import Problem, Solution
 from models.user import User
+from services.course_service import CourseService
 from services.problem_service import ProblemService
 from services.user_service import UserService
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -29,9 +31,7 @@ class ProblemList(Resource):
     @marshal_with(Problem.api_fields)
     def post(self):
 
-        email = get_jwt_identity()
-        user = self.user_service.get_user_by_email(email)
-        user_id = user._id
+        id = get_jwt_identity()
         data = request.get_json()
         name = data.get('name')
         description = data.get('description')
@@ -39,7 +39,7 @@ class ProblemList(Resource):
         tests = data.get('tests')
         publish = data.get('publish')
 
-        return self.user_service.add_problem(user_id, name, description, tip, publish, tests)
+        return self.user_service.add_problem(id, name, description, tip, publish, tests)
 
 
 class UserAuth(Resource):
@@ -62,7 +62,8 @@ class UserAuth(Resource):
         if not authenticated:
             return {"message" : "Bad username or password", "jwt" : None}, 401
 
-        access_token = create_access_token(identity=email)
+        user = self.user_service.get_user_by_email(email)
+        access_token = create_access_token(identity=user._id)
 
         return {"message": "User authenticated successfully" ,"jwt" : access_token}
 
@@ -98,3 +99,44 @@ class SolveProblem(Resource):
         tests = data.get('tests')
         solution = self.user_service.try_solution(user_token, test_key, code, tests)
         return solution
+    
+    @jwt_required
+    @marshal_with(Solution.api_fields)
+    def get(self):
+
+        return Solution.query.all()
+
+
+class CourseCRUD(Resource):
+
+    course_service = CourseService()
+
+    @jwt_required
+    @marshal_with(Course.api_fields)
+    def post(self):
+        user_id = get_jwt_identity()
+        data = request.get_json()
+        name = data.get('name')
+        return self.course_service.create_course(user_id, name)
+
+    @jwt_required
+    @marshal_with(Course.api_fields)
+    def get(self):
+        user_id = get_jwt_identity()
+        return self.course_service.get_all(user_id)
+
+class CourseDetail(Resource):
+
+    user_service = UserService()
+    course_service = CourseService()
+
+    @marshal_with(Course.api_fields)
+    def get(self, id):
+        course = Course.query.get(id)
+        return course if course else ({}, 404)
+    
+    @jwt_required
+    @marshal_with(Course.api_fields)
+    def post(self, id):
+        user_id = get_jwt_identity()
+        return self.course_service.assign_user_to_course(user_id, id)

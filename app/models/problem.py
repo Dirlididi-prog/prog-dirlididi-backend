@@ -15,6 +15,7 @@ class ProblemTest(db.Model):
     problem = db.Column(db.String(9), db.ForeignKey('problem.key'), nullable=False)
     created = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
+    
 
     api_fields = {
         "name":fields.String,
@@ -37,6 +38,7 @@ class Problem(db.Model):
     tip = db.Column(db.String(50), nullable=True)
     tests = db.relationship('ProblemTest')
     owner = db.Column(db.Integer, db.ForeignKey('user._id'), nullable=False)
+    courses = db.Column(db.Integer, db.ForeignKey('course._id'))
     solutions = db.relationship('Solution')
     created = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
@@ -77,5 +79,7 @@ class Solution(db.Model):
         "tests": fields.List(fields.String),
         "code": fields.String,
         "result": fields.String,
-        "passed": fields.Boolean
+        "passed": fields.Boolean,
+        "user": fields.String,
+        "problem": fields.String,
     }

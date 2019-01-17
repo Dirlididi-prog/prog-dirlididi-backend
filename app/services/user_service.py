@@ -24,6 +24,9 @@ class UserService(object):
     def get_user_by_token(self, token):
         return User.query.filter_by(token=token).first()
     
+    def get_user_by_id(self, id):
+        return User.query.get(id)
+    
     def add_problem(self, id, name, description, tip, publish, tests):
         user = User.query.get(id)
         return user.add_problem(name, description, tip, publish, tests)
