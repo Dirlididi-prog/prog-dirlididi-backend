@@ -10,7 +10,7 @@ In order to populate the database, run the app with `python app.py` or `docker-c
 
 | Method | Endpoint     | Entry                    | Result                 |
 | ------ | ------------ | -----                    | ---------------------- |
-| POST   | /problem | JWT Authorization header, name, description, , tip(optional), tests (JSON list with name, input, output and tip(optional)) | Creates and returns a Problem |  
+| POST   | /problem | JWT Authorization header, name, description, tip(optional), tests (JSON list with name, input, output and tip(optional)) | Creates and returns a Problem |  
 | GET    | /problem | | Returns all Problems |
 | GET | /problem/<key:String> |  | Returns a Problem by key |
 | POST | /auth | email, password | Authenticates a user and returns JWT token |
@@ -20,4 +20,4 @@ In order to populate the database, run the app with `python app.py` or `docker-c
 | POST | /course | JWT Authorization header, name | Creates and returns a course |
 | GET | /course | JWT Authorization header | Returns all courses which the user is member |
 | GET| /course/<id:Integer> | | Returns a course by id |
-| POST | /course/<id:Integer> | JWT Authorization header, action("join" or "leave") | Assigns a user to a course, returns the course |
+| POST | /course/<id:Integer> | JWT Authorization header, action("join" or "leave") | Assigns/removes a user to/from a course, returns the course |
