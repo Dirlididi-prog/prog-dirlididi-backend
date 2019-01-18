@@ -31,8 +31,21 @@ class Course(db.Model):
         participation = CourseParticipation(user_id=member._id, user=member)
         if participation not in self._members:
             self._members.append(participation)
-        db.session.add(participation)
-        db.session.commit()
+            db.session.add(participation)
+            db.session.commit()
+            return True
+        return False
+    
+    def remove_member(self, member):
+        participation = [p for p in self._members if p.user_id == member._id]
+        if len(participation) > 0:
+            participation = participation[0]
+            self._members.remove(participation)
+            db.session.delete(participation)
+            db.session.commit()
+            return True
+        return False
+        
     
 
 

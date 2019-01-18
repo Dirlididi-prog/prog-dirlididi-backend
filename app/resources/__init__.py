@@ -127,6 +127,9 @@ class CourseCRUD(Resource):
 
 class CourseDetail(Resource):
 
+    LEAVE_ACTION = 'leave'
+    JOIN_ACTION = 'join'
+
     user_service = UserService()
     course_service = CourseService()
 
@@ -139,4 +142,11 @@ class CourseDetail(Resource):
     @marshal_with(Course.api_fields)
     def post(self, id):
         user_id = get_jwt_identity()
-        return self.course_service.assign_user_to_course(user_id, id)
+        data = request.get_json()
+        action = data.get('action')
+        if action == self.JOIN_ACTION:
+            return self.course_service.assign_user_to_course(user_id, id)
+        elif action == self.LEAVE_ACTION:
+            return self.course_service.remove_user_from_course(user_id, id)
+        else:
+            return {}, 400

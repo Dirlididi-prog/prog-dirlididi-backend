@@ -20,4 +20,4 @@ In order to populate the database, run the app with `python app.py` or `docker-c
 | POST | /course | JWT Authorization header, name | Creates and returns a course |
 | GET | /course | JWT Authorization header | Returns all courses which the user is member |
 | GET| /course/<id:Integer> | | Returns a course by id |
-| POST | /course/<id:Integer> | JWT Authorization header | Assigns a user to a course, returns the course |
+| POST | /course/<id:Integer> | JWT Authorization header, action("join" or "leave") | Assigns a user to a course, returns the course |

@@ -18,6 +18,12 @@ class CourseService(object):
         course.add_member(user)
         return course
 
+    def remove_user_from_course(self, user_id, course_id):
+        user = self.user_service.get_user_by_id(user_id)
+        course = self.get_course_by_id(course_id)
+        course.remove_member(user)
+        return course
+
     def create_course(self, user_id, name):
         user = self.user_service.get_user_by_id(user_id)
         return user.create_course(name)
