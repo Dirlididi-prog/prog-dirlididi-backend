@@ -125,7 +125,7 @@ class CourseCRUD(Resource):
         user_id = get_jwt_identity()
         return self.course_service.get_all(user_id)
 
-class CourseDetail(Resource):
+class CourseIdDetail(Resource):
 
     LEAVE_ACTION = 'leave'
     JOIN_ACTION = 'join'
@@ -135,7 +135,7 @@ class CourseDetail(Resource):
 
     @marshal_with(Course.api_fields)
     def get(self, id):
-        course = Course.query.get(id)
+        course = self.course_service.get_course_by_id(id)
         return course if course else ({}, 404)
     
     @jwt_required
@@ -145,8 +145,34 @@ class CourseDetail(Resource):
         data = request.get_json()
         action = data.get('action')
         if action == self.JOIN_ACTION:
-            return self.course_service.assign_user_to_course(user_id, id)
+            return self.course_service.assign_user_to_course(user_id, course_id=id)
         elif action == self.LEAVE_ACTION:
-            return self.course_service.remove_user_from_course(user_id, id)
+            return self.course_service.remove_user_from_course(user_id, course_id=id)
+        else:
+            return {}, 400
+
+
+class CourseTokenDetail(Resource):
+
+    LEAVE_ACTION = 'leave'
+    JOIN_ACTION = 'join'
+
+    course_service = CourseService()
+
+    @marshal_with(Course.api_fields)
+    def get(self, token):
+        course = self.course_service.get_course_by_token(token)
+        return course if course else ({}, 404)
+    
+    @jwt_required
+    @marshal_with(Course.api_fields)
+    def post(self, token):
+        user_id = get_jwt_identity()
+        data = request.get_json()
+        action = data.get('action')
+        if action == self.JOIN_ACTION:
+            return self.course_service.assign_user_to_course(user_id, course_token=token)
+        elif action == self.LEAVE_ACTION:
+            return self.course_service.remove_user_from_course(user_id, course_token=token)
         else:
             return {}, 400

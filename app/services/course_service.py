@@ -10,17 +10,23 @@ class CourseService(object):
         return Course.query.get(id)
     
     def get_course_by_token(self, token):
-        return Course.query.filter_by(token=token)
+        return Course.query.filter_by(token=token).first()
 
-    def assign_user_to_course(self, user_id, course_id):
+    def assign_user_to_course(self, user_id, course_id=None, course_token=None):
+        if course_id:
+            course = self.get_course_by_id(course_id)
+        elif course_token:
+            course = self.get_course_by_token(course_token)
         user = self.user_service.get_user_by_id(user_id)
-        course = self.get_course_by_id(course_id)
         course.add_member(user)
         return course
 
-    def remove_user_from_course(self, user_id, course_id):
+    def remove_user_from_course(self, user_id, course_id=None, course_token=None):
+        if course_id:
+            course = self.get_course_by_id(course_id)
+        elif course_token:
+            course = self.get_course_by_token(course_token)
         user = self.user_service.get_user_by_id(user_id)
-        course = self.get_course_by_id(course_id)
         course.remove_member(user)
         return course
 

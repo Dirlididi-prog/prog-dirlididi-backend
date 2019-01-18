@@ -1,7 +1,7 @@
 # Dirlididi API
 
 ## Populate db
-In order to populate the database, run the app with `python app.py` or `docker-compose up`, navigate to `/dev` folder and run `populate_db.py`. In resume:
+In order to populate the database, run the app with `python app.py` or `docker-compose up`, navigate to `/dev` folder and run `populate_db.py`. In short:
 
     docker-compose up -d
     cd dev && python populate_db.py
@@ -19,5 +19,6 @@ In order to populate the database, run the app with `python app.py` or `docker-c
 | POST | /solve | (User) token, (Problem) key, code, tests | Registers and returns a solution for a problem |
 | POST | /course | JWT Authorization header, name | Creates and returns a course |
 | GET | /course | JWT Authorization header | Returns all courses which the user is member |
-| GET| /course/<id:Integer> | | Returns a course by id |
-| POST | /course/<id:Integer> | JWT Authorization header, action("join" or "leave") | Assigns/removes a user to/from a course, returns the course |
+| GET| /course/id/<id:Integer> | | Returns a course by id |
+| GET| /course/token/<token:String> | | Returns a course by token |
+| POST | /course/id/<id:Integer> or /course/token/<token:String> | JWT Authorization header, action("join" or "leave") | Assigns/removes a user to/from a course, returns the course |
