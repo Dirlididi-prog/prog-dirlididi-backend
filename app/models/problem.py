@@ -23,7 +23,7 @@ class ProblemTest(db.Model):
         "input": fields.String,
         "publish": fields.Boolean,
         "output": fields.String,
-        "key": fields.String(attribute="_id"),
+        "id": fields.String(attribute="_id"),
         "created": fields.DateTime(dt_format='iso8601')
     }
     

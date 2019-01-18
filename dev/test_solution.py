@@ -21,7 +21,7 @@ payload = {
     "key": problem['key'],
     "token": user['token'],
     "code": "print('Hello Dirlididi!')",
-    "tests": [{"key": problem['tests'][i]['key'], 
+    "tests": [{"id": problem['tests'][i]['id'], 
                     "output": problem['tests'][i]['output']} for i in range(len(problem['tests']))]
 }
 print (payload)

@@ -94,16 +94,15 @@ class SolveProblem(Resource):
     def post(self):
         data = request.get_json()
         user_token = data.get('token')
-        test_key = data.get('key')
+        problem_key = data.get('key')
         code = data.get('code')
         tests = data.get('tests')
-        solution = self.user_service.try_solution(user_token, test_key, code, tests)
+        solution = self.user_service.try_solution(user_token, problem_key, code, tests)
         return solution
     
     @jwt_required
     @marshal_with(Solution.api_fields)
     def get(self):
-
         return Solution.query.all()
 
 

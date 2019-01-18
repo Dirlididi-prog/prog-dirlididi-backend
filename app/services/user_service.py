@@ -31,7 +31,7 @@ class UserService(object):
         user = User.query.get(id)
         return user.add_problem(name, description, tip, publish, tests)
 
-    def try_solution(self, user_token, test_key, code, tests):
+    def try_solution(self, user_token, problem_key, code, tests):
         ''' Registers and returns a solution '''
         user = self.get_user_by_token(user_token)
-        return user.try_solution(test_key, code, tests)
+        return user.try_solution(problem_key, code, tests)

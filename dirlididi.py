@@ -124,7 +124,7 @@ def _submit(key, token, filename, source):
         if return_code:
             print(ERROR % (input_, output_err))
             exit(return_code)
-        tests_result.append({"key": test['key'], "output": output})
+        tests_result.append({"id": test['id'], "output": output})
     print(tests_result)
     content = submit_code(token, key, open(source).read(), tests_result)
     print("Results: " + content['result'])
