@@ -7,6 +7,8 @@ from resources import ProblemDetail, ProblemList, UserAuth
 from resources import UserDetail, SolveProblem, CourseCRUD, CourseIdDetail
 from resources import CourseTokenDetail, UserCourses, Info
 
+DEBUG = True
+
 app = Flask(__name__)
 api = Api(app)
 jwt = JWTManager(app)
@@ -32,7 +34,10 @@ if __name__ == "__main__":
         db.create_all()
         pytest.main(['tests'])
     else:
+        if DEBUG:
+            from dev.populate_db import Populator
+            Populator().start()
         db.init_app(app)
         db.app = app
         db.create_all()
-        app.run(host="0.0.0.0", debug=True)
+        app.run(host="0.0.0.0", debug=DEBUG)
