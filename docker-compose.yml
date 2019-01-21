@@ -1,10 +1,9 @@
 version: '3'
 services:
     backend:
-        build: .
+        image: matheusmelo/dirlididi_api
         container_name: dirlididi_backend
         command: python -u app.py
-        volumes:
-            - ./app/:/var/app/dirlididi_backend/
         ports:
             - "5000:5000"
+    

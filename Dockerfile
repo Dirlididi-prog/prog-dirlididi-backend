@@ -2,8 +2,8 @@ FROM python:3.6
 
 WORKDIR /var/app/
 
-COPY ./app /var/app/dirlididi_backend/
+RUN git clone https://github.com/Dirlididi-prog/prog-dirlididi-backend/
 
-WORKDIR /var/app/dirlididi_backend
+WORKDIR /var/app/prog-dirlididi-backend
 
 RUN pip install -r requirements.txt

@@ -5,6 +5,9 @@ from util import hash_password
 
 class UserService(object):
 
+    def get_all(self):
+        return User.query.all()
+
     def create_user(self, email, password):
         password = hash_password(password)
         user = User(email=email, password=password)

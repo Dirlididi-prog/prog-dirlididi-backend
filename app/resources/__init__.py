@@ -118,11 +118,20 @@ class CourseCRUD(Resource):
         name = data.get('name')
         return self.course_service.create_course(user_id, name)
 
-    @jwt_required
     @marshal_with(Course.api_fields)
+    def get(self):
+        return self.course_service.get_all()
+
+
+class UserCourses(Resource):
+
+    course_service = CourseService()
+
+    @jwt_required
     def get(self):
         user_id = get_jwt_identity()
         return self.course_service.get_all(user_id)
+
 
 class CourseIdDetail(Resource):
 
@@ -175,3 +184,18 @@ class CourseTokenDetail(Resource):
             return self.course_service.remove_user_from_course(user_id, course_token=token)
         else:
             return {}, 400
+
+
+class Info(Resource):
+
+    user_service = UserService()
+    course_service = CourseService()
+    problem_service = ProblemService()
+
+    def get(self):
+        return {
+            "users": len(self.user_service.get_all()),
+            "courses": len(self.course_service.get_all()),
+            "problems": len(self.problem_service.get_all()),
+            "solutions": len([s for user in self.user_service.get_all() for s in user.solutions])
+        }
