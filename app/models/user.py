@@ -49,8 +49,8 @@ class User(db.Model):
     def try_solution(self, problem_key, code, tests):
         return self.problem_service.create_solution(self, problem_key, code, tests)
     
-    def create_course(self, name):
-        course = Course(name=name)
+    def create_course(self, name, language):
+        course = Course(name=name, language=language)
         self.owned_courses.append(course)
         db.session.add(course)
         db.session.commit()

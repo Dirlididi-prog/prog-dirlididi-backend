@@ -30,9 +30,9 @@ class CourseService(object):
         course.remove_member(user)
         return course
 
-    def create_course(self, user_id, name):
+    def create_course(self, user_id, name, language):
         user = self.user_service.get_user_by_id(user_id)
-        return user.create_course(name)
+        return user.create_course(name, language)
     
     def get_all(self, user_id=None):
         if user_id:

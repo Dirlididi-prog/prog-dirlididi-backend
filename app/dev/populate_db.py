@@ -39,15 +39,18 @@ def populate():
     }
 
     course2_ = {
-        "name": "Python avançado"
+        "name": "Python avançado",
+        "language": "python"
     }
 
     course3 = {
-        "name": "Ruby para iniciantes"
+        "name": "Ruby para iniciantes",
+        "language": "ruby"
     }
 
     course4 = {
-        "name": "Python > Ruby"
+        "name": "Python > Ruby",
+        "language": "python"
     }
 
 

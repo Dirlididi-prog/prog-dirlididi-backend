@@ -9,6 +9,7 @@ class Course(db.Model):
     _members = db.relationship('CourseParticipation')
     _problems = db.relationship('Problem')
     token = db.Column(db.String(9), default=key_generator, unique=True)
+    language = db.Column(db.String(50))
 
     @property
     def member_qnt(self):
@@ -28,7 +29,9 @@ class Course(db.Model):
         "owner": fields.Integer,
         "members": fields.List(fields.String),
         "token": fields.String,
-        "problems": fields.List(fields.String)
+        "problems": fields.List(fields.String),
+        "language": fields.String,
+        
     }
 
     def add_member(self, member):
