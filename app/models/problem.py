@@ -42,6 +42,11 @@ class Problem(db.Model):
     solutions = db.relationship('Solution')
     created = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
+    _tags = db.Column(db.PickleType)
+
+    @property
+    def tags(self):
+        return self._tags if self._tags else []
 
     api_fields = {
         "key": fields.String,
@@ -50,8 +55,17 @@ class Problem(db.Model):
         "tip": fields.String,
         "publish": fields.Boolean,
         "tests": fields.Nested(ProblemTest.api_fields),
+        "tags": fields.List(fields.String),
         "created": fields.DateTime(dt_format='iso8601')
     }
+
+    def add_tags(self, tags):
+        tags = set(tags)
+        if self._tags:
+            for tag in tags.difference(self._tags):
+                self._tags.append(tag)
+        else:
+            self._tags = tags
 
     def add_tests(self, tests):
         for test in tests:

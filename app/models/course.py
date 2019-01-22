@@ -11,6 +11,10 @@ class Course(db.Model):
     token = db.Column(db.String(9), default=key_generator, unique=True)
 
     @property
+    def member_qnt(self):
+        return len(self._members)
+
+    @property
     def members(self):
         return [participation.user.email for participation in self._members]
 

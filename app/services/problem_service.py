@@ -4,8 +4,10 @@ from models.problem import Problem, Solution
 
 class ProblemService(object):
 
-    def create_problem(self, name, description, tip, publish):
+    def create_problem(self, name, description, tip, publish, tags=None):
         problem = Problem(name=name, description=description, tip=tip, publish=publish)
+        if tags:
+            problem.add_tags(tags)
         return problem
 
     def get_problem_by_key(self, key):

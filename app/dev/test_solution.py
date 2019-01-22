@@ -6,8 +6,8 @@ def authed_request(action, url, data, jwt):
         json=data)
 
 user_payload = {
-    "email": "matheus@mat.com",
-    "password": "010101"
+    "email": "charlle_gatinho@hotmail.com",
+    "password": "oioi"
 }
 
 jwt = requests.post('http://localhost:5000/auth', json=user_payload).json().get('jwt')

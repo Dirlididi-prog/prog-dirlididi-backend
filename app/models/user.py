@@ -10,6 +10,7 @@ class User(db.Model):
     ''' Represents a User '''
 
     _id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
     token = db.Column(db.String, default=key_generator, nullable=False, unique=True)
     email = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
@@ -17,6 +18,10 @@ class User(db.Model):
     owned_courses = db.relationship('Course')
     course_participations = db.relationship('CourseParticipation')
     solutions = db.relationship('Solution')
+
+    @property
+    def solution_qnt(self):
+        return len(self.solutions)
 
     @property
     def courses(self):
@@ -27,13 +32,14 @@ class User(db.Model):
 
     api_fields = {
         "id": fields.Integer(attribute='_id'),
-        "token": fields.String(),
-        "email": fields.String(),
-        "ownedProblems": fields.Nested(Problem.api_fields, attribute='owned_problems')
+        "token": fields.String,
+        "email": fields.String,
+        "ownedProblems": fields.Nested(Problem.api_fields, attribute='owned_problems'),
+        "name": fields.String
     }
 
-    def add_problem(self, name, description, tip, publish, tests):
-        problem = self.problem_service.create_problem(name, description, tip, publish)
+    def add_problem(self, name, description, tip, publish, tests, tags=None):
+        problem = self.problem_service.create_problem(name, description, tip, publish, tags)
         self.owned_problems.append(problem)
         db.session.add(problem)
         problem.add_tests(tests)

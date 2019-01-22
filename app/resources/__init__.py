@@ -1,5 +1,5 @@
 from flask import request
-from flask_restful import Resource, marshal_with
+from flask_restful import Resource, marshal_with, fields
 from flask_jwt_extended import create_access_token
 from models.course import Course
 from models.problem import Problem, Solution
@@ -30,7 +30,6 @@ class ProblemList(Resource):
     @jwt_required
     @marshal_with(Problem.api_fields)
     def post(self):
-
         id = get_jwt_identity()
         data = request.get_json()
         name = data.get('name')
@@ -38,8 +37,8 @@ class ProblemList(Resource):
         tip = data.get('tip')
         tests = data.get('tests')
         publish = data.get('publish')
-
-        return self.user_service.add_problem(id, name, description, tip, publish, tests)
+        tags = data.get('tags')
+        return self.user_service.add_problem(id, name, description, tip, publish, tests, tags)
 
 
 class UserAuth(Resource):
@@ -83,7 +82,8 @@ class UserDetail(Resource):
         data = request.get_json()
         email = data.get('email')
         password = data.get('password')
-        return self.user_service.create_user(email, password)
+        name = data.get('name')
+        return self.user_service.create_user(name, email, password)
 
 
 class SolveProblem(Resource):
@@ -188,14 +188,36 @@ class CourseTokenDetail(Resource):
 
 class Info(Resource):
 
+    FIELDS = {
+        "users": fields.Integer,
+        "courses": fields.Integer,
+        "problems": fields.Integer,
+        "solutions": fields.Integer,
+        "topUsers": fields.Nested({
+            "id": fields.Integer(attribute="_id"),
+            "email": fields.String,
+            "name": fields.String,
+            "solutions": fields.Integer(attribute="solution_qnt")
+        }),
+        "topCourses": fields.Nested({
+            "id": fields.Integer(attribute="_id"),
+            "token": fields.String,
+            "members": fields.Integer(attribute="member_qnt"),
+            "name": fields.String
+        })
+    }
+
     user_service = UserService()
     course_service = CourseService()
     problem_service = ProblemService()
 
+    @marshal_with(FIELDS)
     def get(self):
         return {
             "users": len(self.user_service.get_all()),
             "courses": len(self.course_service.get_all()),
             "problems": len(self.problem_service.get_all()),
-            "solutions": len([s for user in self.user_service.get_all() for s in user.solutions])
+            "solutions": len([s for user in self.user_service.get_all() for s in user.solutions]),
+            "topUsers": self.user_service.get_top_users(),
+            "topCourses": self.course_service.get_top_courses()
         }

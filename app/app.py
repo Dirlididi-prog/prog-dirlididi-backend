@@ -7,7 +7,7 @@ from resources import ProblemDetail, ProblemList, UserAuth
 from resources import UserDetail, SolveProblem, CourseCRUD, CourseIdDetail
 from resources import CourseTokenDetail, UserCourses, Info
 
-DEBUG = True
+POPULATE = True
 
 app = Flask(__name__)
 api = Api(app)
@@ -34,10 +34,10 @@ if __name__ == "__main__":
         db.create_all()
         pytest.main(['tests'])
     else:
-        if DEBUG:
+        if POPULATE:
             from dev.populate_db import Populator
             Populator().start()
         db.init_app(app)
         db.app = app
         db.create_all()
-        app.run(host="0.0.0.0", debug=DEBUG)
+        app.run(host="0.0.0.0")

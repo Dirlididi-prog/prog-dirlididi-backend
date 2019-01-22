@@ -40,3 +40,8 @@ class CourseService(object):
             return user.courses
         else:
             return Course.query.all()
+
+    def get_top_courses(self, num=4):
+        top_courses = sorted(Course.query.all(), key=lambda x: len(x.members), reverse=True)
+        num = min(len(top_courses), num)
+        return top_courses[:num]
