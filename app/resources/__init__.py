@@ -117,7 +117,8 @@ class CourseCRUD(Resource):
         data = request.get_json()
         name = data.get('name')
         language = data.get('language')
-        return self.course_service.create_course(user_id, name, language)
+        problems = data.get('problems')
+        return self.course_service.create_course(user_id, name, language, problems)
 
     @marshal_with(Course.api_fields)
     def get(self):

@@ -22,8 +22,6 @@ class ProblemService(object):
         problem = self.get_problem_by_key(problem)
         tests = sorted(problem.tests, key=lambda x: x._id)
         results = sorted(results, key=lambda x: int(x.get('id')))
-        print ([(x._id, x.output) for x in tests])
-        print (results)
 
         for i in range(len(results)):
             user_result = results[i]

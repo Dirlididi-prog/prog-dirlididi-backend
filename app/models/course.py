@@ -31,7 +31,7 @@ class Course(db.Model):
         "token": fields.String,
         "problems": fields.List(fields.String),
         "language": fields.String,
-        
+
     }
 
     def add_member(self, member):
@@ -52,7 +52,9 @@ class Course(db.Model):
             db.session.commit()
             return True
         return False
-        
+    
+    def set_problems(self, problems):
+        self._problems = problems
     
 
 

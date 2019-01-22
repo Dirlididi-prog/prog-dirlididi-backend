@@ -19,7 +19,7 @@ In order to populate the database, run the app with `python app.py` or `docker-c
 | POST | /solve | (User) token, (Problem) key, code, tests | Registers and returns a solution for a problem |
 | POST | /course | JWT Authorization header, name | Creates and returns a course |
 | GET | /course | | Returns all courses |
-| GET | /user/courses | | Returns all user courses |
+| GET | /user/courses | JWT authorization token | Returns all user courses |
 | GET | /course/id/<id:Integer> | | Returns a course by id |
 | GET | /course/token/<token:String> | | Returns a course by token |
 | POST | /course/id/<id:Integer> or /course/token/<token:String> | JWT Authorization header, action("join" or "leave") | Assigns/removes a user to/from a course, returns the course |

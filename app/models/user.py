@@ -25,7 +25,6 @@ class User(db.Model):
 
     @property
     def courses(self):
-        print([participation.course.name for participation in self.course_participations])
         return [participation.course for participation in self.course_participations]
 
     problem_service = ProblemService()
@@ -49,8 +48,11 @@ class User(db.Model):
     def try_solution(self, problem_key, code, tests):
         return self.problem_service.create_solution(self, problem_key, code, tests)
     
-    def create_course(self, name, language):
-        course = Course(name=name, language=language)
+    def create_course(self, name, language, problems):
+        if problems:
+            course = Course(name=name, language=language, _problems=problems)
+        else:
+            course = Course(name=name, language=language)
         self.owned_courses.append(course)
         db.session.add(course)
         db.session.commit()

@@ -1,10 +1,11 @@
 from models.course import Course
 from services.user_service import UserService
-
+from services.problem_service import ProblemService
 
 class CourseService(object):
 
     user_service = UserService()
+    problem_service = ProblemService()
 
     def get_course_by_id(self, id):
         return Course.query.get(id)
@@ -30,9 +31,11 @@ class CourseService(object):
         course.remove_member(user)
         return course
 
-    def create_course(self, user_id, name, language):
+    def create_course(self, user_id, name, language, problems):
+        if problems:
+            problems = [self.problem_service.get_problem_by_key(key) for key in problems]
         user = self.user_service.get_user_by_id(user_id)
-        return user.create_course(name, language)
+        return user.create_course(name, language, problems)
     
     def get_all(self, user_id=None):
         if user_id:
