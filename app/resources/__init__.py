@@ -8,6 +8,8 @@ from services.course_service import CourseService
 from services.problem_service import ProblemService
 from services.user_service import UserService
 from flask_jwt_extended import get_jwt_identity, jwt_required
+from exceptions import MissingAttribute, Unauthorized
+from config.callbacks import verify_attributes
 
 class ProblemDetail(Resource):
 
@@ -27,6 +29,7 @@ class ProblemList(Resource):
     def get(self):
         return self.problem_service.get_all()
 
+    @verify_attributes(Course.required_attributes)
     @jwt_required
     @marshal_with(Problem.api_fields)
     def post(self):
@@ -45,6 +48,7 @@ class UserAuth(Resource):
 
     user_service = UserService()
 
+    @verify_attributes(['email', 'password'])
     def post(self):
         """ Returns the JWT access token if username and password match to a
         registered user or errors if they doesn't
@@ -54,12 +58,12 @@ class UserAuth(Resource):
         password = request.json.get('password', None)
 
         if not email or not password:
-            return {"message" : "Missing email or password field", "jwt" : None }, 400
+            raise MissingAttribute("Missing email or password field")
 
         authenticated = self.user_service.authenticate_user(email, password)
 
         if not authenticated:
-            return {"message" : "Bad username or password", "jwt" : None}, 401
+            raise Unauthorized("Bad username or password")
 
         user = self.user_service.get_user_by_email(email)
         access_token = create_access_token(identity=user._id)
@@ -74,9 +78,9 @@ class UserDetail(Resource):
     @marshal_with(User.api_fields)
     def get(self):
         id = get_jwt_identity()
-        user = self.user_service.get_user_by_id(id)
-        return user
+        return self.user_service.get_user_by_id(id)
 
+    @verify_attributes(User.required_attributes)
     @marshal_with(User.api_fields)
     def post(self):
         data = request.get_json()
@@ -90,6 +94,7 @@ class SolveProblem(Resource):
 
     user_service = UserService()
 
+    @verify_attributes(Solution.required_attributes)
     @marshal_with(Solution.api_fields)
     def post(self):
         data = request.get_json()
@@ -110,15 +115,17 @@ class CourseCRUD(Resource):
 
     course_service = CourseService()
 
+    @verify_attributes(Course.required_attributes)
     @jwt_required
     @marshal_with(Course.api_fields)
     def post(self):
         user_id = get_jwt_identity()
         data = request.get_json()
         name = data.get('name')
+        description = data.get('description')
         language = data.get('language')
         problems = data.get('problems')
-        return self.course_service.create_course(user_id, name, language, problems)
+        return self.course_service.create_course(user_id, name, description, language, problems)
 
     @marshal_with(Course.api_fields)
     def get(self):
@@ -148,6 +155,7 @@ class CourseIdDetail(Resource):
         course = self.course_service.get_course_by_id(id)
         return course if course else ({}, 404)
     
+    @verify_attributes(['action'])
     @jwt_required
     @marshal_with(Course.api_fields)
     def post(self, id):
@@ -174,6 +182,7 @@ class CourseTokenDetail(Resource):
         course = self.course_service.get_course_by_token(token)
         return course if course else ({}, 404)
     
+    @verify_attributes(['action'])
     @jwt_required
     @marshal_with(Course.api_fields)
     def post(self, token):
@@ -205,7 +214,8 @@ class Info(Resource):
             "id": fields.Integer(attribute="_id"),
             "token": fields.String,
             "members": fields.Integer(attribute="member_qnt"),
-            "name": fields.String
+            "name": fields.String,
+            "language": fields.String,
         })
     }
 

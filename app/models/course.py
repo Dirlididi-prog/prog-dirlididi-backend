@@ -3,6 +3,9 @@ from flask_restful import fields
 from util import key_generator
 
 class Course(db.Model):
+
+    required_attributes = ["name", "description"]
+
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     owner = db.Column(db.Integer, db.ForeignKey('user._id'))
@@ -10,6 +13,8 @@ class Course(db.Model):
     _problems = db.relationship('Problem')
     token = db.Column(db.String(9), default=key_generator, unique=True)
     language = db.Column(db.String(50))
+    description = db.Column(db.Text, nullable=False)
+
 
     @property
     def member_qnt(self):

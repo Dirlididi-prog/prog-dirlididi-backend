@@ -1,6 +1,6 @@
 from db import db
 from models.problem import Problem, Solution
-
+from exceptions import NotFound
 
 class ProblemService(object):
 
@@ -11,7 +11,11 @@ class ProblemService(object):
         return problem
 
     def get_problem_by_key(self, key):
-        return Problem.query.get(key)
+        problem = Problem.query.get(key)
+        if problem:
+            return problem
+        else:
+            raise NotFound("Problem with key {} was not found".format(key))
     
     def get_all(self):
         return Problem.query.all()

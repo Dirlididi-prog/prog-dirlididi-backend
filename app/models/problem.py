@@ -6,6 +6,8 @@ from datetime import datetime
 class ProblemTest(db.Model):
     ''' Represents a test for a problem '''
 
+    required_attributes = ["input", "output"]
+
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     tip = db.Column(db.String(50), nullable=True)
@@ -30,6 +32,8 @@ class ProblemTest(db.Model):
 
 class Problem(db.Model):
     ''' Represents a programming question '''
+
+    required_attributes = ["name", "description", "tests"]
 
     key = db.Column(db.String(9), default=key_generator, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
@@ -80,6 +84,8 @@ class Problem(db.Model):
 
 class Solution(db.Model):
     ''' Represents a possible solution for a problem '''
+
+    required_attributes = ['tests', 'code', 'key', 'token']
 
     _id = db.Column(db.Integer, primary_key=True)
     tests = db.Column(db.PickleType, nullable=False)

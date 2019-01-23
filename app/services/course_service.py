@@ -1,6 +1,8 @@
 from models.course import Course
 from services.user_service import UserService
 from services.problem_service import ProblemService
+from exceptions import NotFound
+
 
 class CourseService(object):
 
@@ -8,10 +10,19 @@ class CourseService(object):
     problem_service = ProblemService()
 
     def get_course_by_id(self, id):
-        return Course.query.get(id)
+        course = Course.query.get(id)
+        if course:
+            return course
+        else:
+            raise NotFound("Course with id {} was not found".format(id))
     
     def get_course_by_token(self, token):
-        return Course.query.filter_by(token=token).first()
+        course = Course.query.filter_by(token=token).first()
+        if course:
+            return course
+        else:
+            raise NotFound("Course with token {} was not found".format(token))
+
 
     def assign_user_to_course(self, user_id, course_id=None, course_token=None):
         if course_id:
@@ -31,11 +42,11 @@ class CourseService(object):
         course.remove_member(user)
         return course
 
-    def create_course(self, user_id, name, language, problems):
+    def create_course(self, user_id, name, description, language, problems):
         if problems:
             problems = [self.problem_service.get_problem_by_key(key) for key in problems]
         user = self.user_service.get_user_by_id(user_id)
-        return user.create_course(name, language, problems)
+        return user.create_course(name, description, language, problems)
     
     def get_all(self, user_id=None):
         if user_id:

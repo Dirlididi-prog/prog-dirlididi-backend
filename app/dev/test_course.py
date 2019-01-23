@@ -17,7 +17,8 @@ jwt = requests.post('http://localhost:5000/auth', json=user_payload).json().get(
 user = authed_request(requests.get, 'http://localhost:5000/user', None, jwt).json()
 
 course_payload = {
-    "name": "Algoritmo"
+    "name": "Algoritmo",
+    "description": "lalalal"
 }
 
 print(authed_request(requests.post, 'http://localhost:5000/course', course_payload, jwt).json())

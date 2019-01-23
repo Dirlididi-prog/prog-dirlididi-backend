@@ -35,22 +35,26 @@ def populate():
     }
 
     course1 = {
-        "name": "Algoritmo"
+        "name": "Algoritmo",
+        "description": "Curso básico de algoritmos"
     }
 
     course2_ = {
         "name": "Python avançado",
-        "language": "python"
+        "language": "python",
+        "description": "Curso abançado de Python"
     }
 
     course3 = {
         "name": "Ruby para iniciantes",
-        "language": "ruby"
+        "language": "ruby",
+        "description": "Para você que tem pouca experiência na linguagem!"
     }
 
     course4 = {
         "name": "Python > Ruby",
-        "language": "python"
+        "language": "python",
+        "description": "Falando apenas a verdade."
     }
 
 
@@ -65,8 +69,8 @@ def populate():
 
     course1 = authed_request(requests.post, 'http://localhost:5000/course', course1, jwt1).json()
     course2 = authed_request(requests.post, 'http://localhost:5000/course', course4, jwt1).json()
-    print(authed_request(requests.post, 'http://localhost:5000/course', course3, jwt3).json())
-    print(authed_request(requests.post, 'http://localhost:5000/course', course2_, jwt2).json())
+    authed_request(requests.post, 'http://localhost:5000/course', course3, jwt3).json()
+    authed_request(requests.post, 'http://localhost:5000/course', course2_, jwt2).json()
 
     authed_request(requests.post, 'http://localhost:5000/course/token/{}'.format(course1['token']), {"action": "join"}, jwt2)
     authed_request(requests.post, 'http://localhost:5000/course/token/{}'.format(course1['token']), {"action": "join"}, jwt3)

@@ -9,6 +9,8 @@ from util import key_generator
 class User(db.Model):
     ''' Represents a User '''
 
+    required_attributes = ["email", "password"]
+
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     token = db.Column(db.String, default=key_generator, nullable=False, unique=True)
@@ -48,11 +50,11 @@ class User(db.Model):
     def try_solution(self, problem_key, code, tests):
         return self.problem_service.create_solution(self, problem_key, code, tests)
     
-    def create_course(self, name, language, problems):
+    def create_course(self, name, description, language, problems):
         if problems:
-            course = Course(name=name, language=language, _problems=problems)
+            course = Course(name=name, description=description, language=language, _problems=problems)
         else:
-            course = Course(name=name, language=language)
+            course = Course(name=name, description=description, language=language)
         self.owned_courses.append(course)
         db.session.add(course)
         db.session.commit()

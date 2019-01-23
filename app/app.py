@@ -2,10 +2,12 @@ from sys import argv, exit
 from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
+from config.callbacks import define_api_callbacks
 from db import db
 from resources import ProblemDetail, ProblemList, UserAuth
 from resources import UserDetail, SolveProblem, CourseCRUD, CourseIdDetail
 from resources import CourseTokenDetail, UserCourses, Info
+
 
 POPULATE = True
 
@@ -14,6 +16,8 @@ api = Api(app)
 jwt = JWTManager(app)
 
 app.config['JWT_SECRET_KEY'] = 'testing'
+define_api_callbacks(app)
+
 
 api.add_resource(ProblemList, '/problem')
 api.add_resource(ProblemDetail, '/problem/<string:key>')
@@ -41,4 +45,4 @@ if __name__ == "__main__":
         db.init_app(app)
         db.app = app
         db.create_all()
-        app.run(host="0.0.0.0")
+        app.run(host="0.0.0.0", debug=True)
