@@ -1,4 +1,4 @@
-from sys import argv
+from sys import argv, exit
 from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
@@ -32,7 +32,8 @@ if __name__ == "__main__":
         db.init_app(app)
         db.app = app
         db.create_all()
-        pytest.main(['tests'])
+        code = pytest.main(['tests'])
+        exit(code)
     else:
         if POPULATE:
             from dev.populate_db import Populator
