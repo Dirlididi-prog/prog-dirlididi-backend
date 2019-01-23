@@ -6,7 +6,7 @@ from tests.helpers import clear_db_data
 @fixture
 def user(clear_db_data):
     from services.user_service import UserService
-    user = UserService().create_user(email="test@test.com", password="12345")
+    user = UserService().create_user(email="test@test.com", password="12345", name="test")
     return user
 
 
