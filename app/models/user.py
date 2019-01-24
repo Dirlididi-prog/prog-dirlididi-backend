@@ -16,6 +16,7 @@ class User(db.Model):
     token = db.Column(db.String, default=key_generator, nullable=False, unique=True)
     email = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
+    admin = db.Column(db.Boolean, default=False, nullable=False)
     owned_problems = db.relationship('Problem')
     owned_courses = db.relationship('Course')
     course_participations = db.relationship('CourseParticipation')
@@ -40,10 +41,12 @@ class User(db.Model):
     }
 
     def add_problem(self, name, description, tip, publish, tests, tags=None):
-        problem = self.problem_service.create_problem(name, description, tip, publish, tags)
+        problem = self.problem_service.create_problem(name, description, tip, tags)
         self.owned_problems.append(problem)
         db.session.add(problem)
         problem.add_tests(tests)
+        if publish:
+            self.problem_service.create_publish_request(problem)
         db.session.commit()
         return problem
 

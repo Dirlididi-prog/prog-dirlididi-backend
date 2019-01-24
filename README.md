@@ -22,5 +22,7 @@ In order to populate the database, run the app with `python app.py` or `docker-c
 | GET | /user/courses | JWT authorization token | Returns all user courses |
 | GET | /course/id/<id:Integer> | | Returns a course by id |
 | GET | /course/token/<token:String> | | Returns a course by token |
-| POST | /course/id/<id:Integer> or /course/token/<token:String> | JWT Authorization header, action("join" or "leave") | Assigns/removes a user to/from a course, returns the course |
+| POST | /course/id/<id:Integer> or /course/token/<token:String> | JWT Authorization header, action ("join" or "leave") | Assigns/removes a user to/from a course, returns the course |
 | GET | /info | | Returns Dirlididi info (courses, users, problems, solutions quantity) |
+| GET | /admin/publish-request | JWT Authorization header, user must be admin | Returns all available Publish Requests |
+| POST | /admin/publish-request | JWT Authorization header, id (Publish Request id), action ("accept" or "decline), user must be admin | Accepts/declines a Publish Request, making a problem public if accepted. Returns the Problem |

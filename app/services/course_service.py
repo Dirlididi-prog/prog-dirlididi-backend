@@ -23,7 +23,6 @@ class CourseService(object):
         else:
             raise NotFound("Course with token {} was not found".format(token))
 
-
     def assign_user_to_course(self, user_id, course_id=None, course_token=None):
         if course_id:
             course = self.get_course_by_id(course_id)

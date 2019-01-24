@@ -44,6 +44,7 @@ class Problem(db.Model):
     owner = db.Column(db.Integer, db.ForeignKey('user._id'), nullable=False)
     courses = db.Column(db.Integer, db.ForeignKey('course._id'))
     solutions = db.relationship('Solution')
+    publish_request = db.relationship('PublishRequest')
     created = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
     _tags = db.Column(db.PickleType)
@@ -103,3 +104,22 @@ class Solution(db.Model):
         "user": fields.String,
         "problem": fields.String,
     }
+
+
+class PublishRequest(db.Model):
+    _id = db.Column(db.Integer, primary_key=True)
+    problem = db.relationship('Problem')
+    problem_id = db.Column(db.String, db.ForeignKey('problem.key'))
+
+    api_fields = {
+        "id": fields.Integer(attribute="_id"),
+        "problem": fields.Nested(Problem.api_fields)
+    }
+
+    def accept(self):
+        self.problem.publish = True
+        db.session.delete(self)
+        db.session.commit()
+    
+    def decline(self):
+        db.session.delete(self)

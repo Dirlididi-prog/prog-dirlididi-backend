@@ -2,13 +2,13 @@ from flask import request
 from flask_restful import Resource, marshal_with, fields
 from flask_jwt_extended import create_access_token
 from models.course import Course
-from models.problem import Problem, Solution
+from models.problem import Problem, Solution, PublishRequest
 from models.user import User
 from services.course_service import CourseService
 from services.problem_service import ProblemService
 from services.user_service import UserService
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from exceptions import MissingAttribute, Unauthorized
+from exceptions import MissingAttribute, Unauthorized, BadRequest
 from config.callbacks import verify_attributes
 
 class ProblemDetail(Resource):
@@ -27,7 +27,7 @@ class ProblemList(Resource):
 
     @marshal_with(Problem.api_fields)
     def get(self):
-        return self.problem_service.get_all()
+        return self.problem_service.get_all_public()
 
     @verify_attributes(Course.required_attributes)
     @jwt_required
@@ -152,8 +152,7 @@ class CourseIdDetail(Resource):
 
     @marshal_with(Course.api_fields)
     def get(self, id):
-        course = self.course_service.get_course_by_id(id)
-        return course if course else ({}, 404)
+        return self.course_service.get_course_by_id(id)
     
     @verify_attributes(['action'])
     @jwt_required
@@ -167,7 +166,7 @@ class CourseIdDetail(Resource):
         elif action == self.LEAVE_ACTION:
             return self.course_service.remove_user_from_course(user_id, course_id=id)
         else:
-            return {}, 400
+            raise BadRequest("'{}' action is not valid".format(action))
 
 
 class CourseTokenDetail(Resource):
@@ -194,7 +193,7 @@ class CourseTokenDetail(Resource):
         elif action == self.LEAVE_ACTION:
             return self.course_service.remove_user_from_course(user_id, course_token=token)
         else:
-            return {}, 400
+            raise BadRequest("'{}' action is not valid".format(action))
 
 
 class Info(Resource):
@@ -233,3 +232,35 @@ class Info(Resource):
             "topUsers": self.user_service.get_top_users(),
             "topCourses": self.course_service.get_top_courses()
         }
+
+
+class AdminPublishRequests(Resource):
+
+    ACCEPT_ACTION = 'accept'
+    DECLINE_ACTION = 'decline'
+
+    problem_service = ProblemService()
+    user_service = UserService()
+
+    @marshal_with(PublishRequest.api_fields)
+    def get(self):
+        return self.problem_service.get_all_publish_requests()
+    
+    @jwt_required
+    @verify_attributes(["action"])
+    @marshal_with(Problem.api_fields)
+    def post(self):
+        user_id = get_jwt_identity()
+        data = request.get_json()
+        pr_id = data.get('id')
+        action = data.get('action')
+        
+        if self.user_service.check_admin(user_id):
+            if action == self.ACCEPT_ACTION:
+                return self.problem_service.accept_publish_request(pr_id)
+            elif action == self.DECLINE_ACTION:
+                return self.problem_service.decline_publish_request(pr_id)
+            else:
+                raise BadRequest("'{}' action is not valid".format(action))
+        else:
+            raise Unauthorized("User with id {} is not admin".format(user_id))

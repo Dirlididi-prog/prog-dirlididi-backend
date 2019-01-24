@@ -1,14 +1,39 @@
 from db import db
-from models.problem import Problem, Solution
+from models.problem import Problem, Solution, PublishRequest
 from exceptions import NotFound
 
 class ProblemService(object):
 
-    def create_problem(self, name, description, tip, publish, tags=None):
-        problem = Problem(name=name, description=description, tip=tip, publish=publish)
+    def create_problem(self, name, description, tip, tags=None):
+        problem = Problem(name=name, description=description, tip=tip)
         if tags:
             problem.add_tags(tags)
         return problem
+
+    def create_publish_request(self, problem):
+        p = PublishRequest(problem=problem)
+        db.session.add(p)
+        return p
+    
+    def get_publish_request_by_id(self, id):
+        publish_request = PublishRequest.query.get(id)
+        if publish_request:
+            return publish_request
+        else:
+            raise NotFound("Publish request with id {} was not found".format(id))
+
+    def get_all_publish_requests(self):
+        return PublishRequest.query.all()
+
+    def accept_publish_request(self, id):
+        publish_request = self.get_publish_request_by_id(id)
+        publish_request.accept()
+        return publish_request.problem
+    
+    def decline_publish_request(self, id):
+        publish_request = self.get_publish_request_by_id(id)
+        publish_request.decline()
+        return publish_request.problem
 
     def get_problem_by_key(self, key):
         problem = Problem.query.get(key)
@@ -19,6 +44,9 @@ class ProblemService(object):
     
     def get_all(self):
         return Problem.query.all()
+
+    def get_all_public(self):
+        return [p for p in self.get_all() if p.publish]
 
     def check_response(self, problem, results):
         ''' Returns the test results for a solution '''

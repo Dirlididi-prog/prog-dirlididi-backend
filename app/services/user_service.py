@@ -8,9 +8,9 @@ class UserService(object):
     def get_all(self):
         return User.query.all()
 
-    def create_user(self, name, email, password):
+    def create_user(self, name, email, password, admin=False):
         password = hash_password(password)
-        user = User(name=name, email=email, password=password)
+        user = User(name=name, email=email, password=password, admin=admin)
         db.session.add(user)
         db.session.commit()
         return user
@@ -55,3 +55,7 @@ class UserService(object):
         top_users = sorted(self.get_all(), key=lambda x: x.solution_qnt, reverse=True)
         num = min(len(top_users), num)
         return top_users[:num]
+
+    def check_admin(self, id):
+        user = self.get_user_by_id(id)
+        return user.admin

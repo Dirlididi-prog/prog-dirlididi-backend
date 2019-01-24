@@ -3,6 +3,7 @@ import requests
 import json
 from threading import Thread
 from time import sleep
+from services.user_service import UserService
 
 class Populator(Thread):
 
@@ -21,6 +22,8 @@ def populate():
         "password": "010101",
         "name": "Matheus Melo"
     }
+
+    UserService().create_user(email="matheus@mat.com", password="010101", name="Matheus Melo", admin=True)
 
     user2 = {
         "email": "charlin@charlle.com",
@@ -58,11 +61,12 @@ def populate():
     }
 
 
-    user1_token = requests.post('http://localhost:5000/user', json=user_payload).json().get('token')
+    jwt1 = requests.post('http://localhost:5000/auth', json=user_payload).json().get('jwt')
+    
+    user1_token = authed_request(requests.get, 'http://localhost:5000/user', None, jwt1).json().get('token')
     user2_token = requests.post('http://localhost:5000/user', json=user2).json().get('token')
     requests.post('http://localhost:5000/user', json=user3)
 
-    jwt1 = requests.post('http://localhost:5000/auth', json=user_payload).json().get('jwt')
     jwt2 = requests.post('http://localhost:5000/auth', json=user2).json().get('jwt')
     jwt3 = requests.post('http://localhost:5000/auth', json=user3).json().get('jwt')
 
@@ -84,6 +88,9 @@ def populate():
         authed_request(requests.post, 'http://localhost:5000/problem', problem, jwt1)
         sleep(0.05)
 
+    for i in range(45):
+        print(authed_request(requests.post, 'http://localhost:5000/admin/publish-request', {"id": i, "action": "accept"}, jwt1).json().get('name'))
+
     problems = requests.get('http://localhost:5000/problem').json()
 
     problem = [x for x in problems if "cores" in x['name']][0]
@@ -103,6 +110,7 @@ def populate():
 
     for i in range(2):
         authed_request(requests.post, 'http://localhost:5000/solve', payload, jwt3)
+
 
 
     if len(requests.get('http://localhost:5000/problem').json()) == len(problems):

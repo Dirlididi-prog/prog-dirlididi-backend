@@ -23,3 +23,7 @@ class Unauthorized(DirlididiBaseException):
 
 class MissingAttribute(DirlididiBaseException):
     status_code = 400
+
+
+class BadRequest(DirlididiBaseException):
+    status_code = 400
