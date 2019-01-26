@@ -27,7 +27,8 @@ class ProblemList(Resource):
 
     @marshal_with(Problem.api_fields)
     def get(self):
-        return self.problem_service.get_all_public()
+        name = request.args.get('name')
+        return self.problem_service.get_all_public(name)
 
     @verify_attributes(Course.required_attributes)
     @jwt_required

@@ -45,8 +45,11 @@ class ProblemService(object):
     def get_all(self):
         return Problem.query.all()
 
-    def get_all_public(self):
-        return [p for p in self.get_all() if p.publish]
+    def get_all_public(self, name=None):
+        public = [p for p in self.get_all() if p.publish]
+        if name:
+            public = [p for p in public if name in p.name]
+        return public
 
     def check_response(self, problem, results):
         ''' Returns the test results for a solution '''

@@ -20,7 +20,6 @@ cors = CORS(app)
 app.config['JWT_SECRET_KEY'] = 'testing'
 define_api_callbacks(app)
 
-
 api.add_resource(ProblemList, '/problem')
 api.add_resource(ProblemDetail, '/problem/<string:key>')
 api.add_resource(UserAuth, '/auth')
