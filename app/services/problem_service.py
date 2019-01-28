@@ -15,6 +15,13 @@ class ProblemService(object):
         db.session.add(p)
         return p
     
+    def update_problem(self, user_id, key, data):
+        problem = self.get_problem_by_key(key)
+        if problem.owner != user_id:
+            raise Unauthorized("User with id {} is not owner of this problem".format(user_id))
+        problem.update(data)
+        return problem
+    
     def get_publish_request_by_id(self, id):
         publish_request = PublishRequest.query.get(id)
         if publish_request:
@@ -75,3 +82,7 @@ class ProblemService(object):
         db.session.add(solution)
         db.session.commit()
         return solution
+
+    def delete_problem(self, user_id, key):
+        problem = self.get_problem_by_key(key)
+        problem.delete(user_id)

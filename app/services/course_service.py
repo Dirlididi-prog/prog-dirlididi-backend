@@ -58,3 +58,21 @@ class CourseService(object):
         top_courses = sorted(Course.query.all(), key=lambda x: len(x.members), reverse=True)
         num = min(len(top_courses), num)
         return top_courses[:num]
+
+    def update_course(self, user_id, data, id):
+        course = self.get_course_by_id(id)
+        
+        if course.owner != user_id:
+            raise Unauthorized("User with id {} is not owner of this course".format(user_id))
+
+        if "problems" in data:
+            problems = data.get('problems')
+            problems = [self.problem_service.get_problem_by_key(key) for key in problems]
+            course._problems = problems
+        
+        course.update(data)
+        return course
+    
+    def delete_course(self, user_id, id):
+        course = self.get_course_by_id(id)
+        course.delete(user_id)

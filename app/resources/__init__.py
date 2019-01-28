@@ -19,6 +19,16 @@ class ProblemDetail(Resource):
     def get(self, key):
         return self.problem_service.get_problem_by_key(key)
 
+    @jwt_required
+    @marshal_with(Problem.api_fields)
+    def put(self, key):
+        user_id = get_jwt_identity()
+        return self.problem_service.update_problem(user_id, key, request.get_json())
+    
+    def delete(self, key):
+        self.problem_service.delete_problem(key)
+        return {}
+
 
 class ProblemList(Resource):
 
@@ -169,6 +179,17 @@ class CourseIdDetail(Resource):
         else:
             raise BadRequest("'{}' action is not valid".format(action))
 
+    @jwt_required
+    @marshal_with(Course.api_fields)
+    def put(self, id):
+        user_id = get_jwt_identity()
+        return self.course_service.update_course(user_id, request.get_json(), id=id)
+
+    @jwt_required
+    def delete(self, id):
+        user_id = get_jwt_identity()
+        self.course_service.delete_course(user_id, id)
+        return {}
 
 class CourseTokenDetail(Resource):
 
@@ -179,22 +200,7 @@ class CourseTokenDetail(Resource):
 
     @marshal_with(Course.api_fields)
     def get(self, token):
-        course = self.course_service.get_course_by_token(token)
-        return course if course else ({}, 404)
-    
-    @verify_attributes(['action'])
-    @jwt_required
-    @marshal_with(Course.api_fields)
-    def post(self, token):
-        user_id = get_jwt_identity()
-        data = request.get_json()
-        action = data.get('action')
-        if action == self.JOIN_ACTION:
-            return self.course_service.assign_user_to_course(user_id, course_token=token)
-        elif action == self.LEAVE_ACTION:
-            return self.course_service.remove_user_from_course(user_id, course_token=token)
-        else:
-            raise BadRequest("'{}' action is not valid".format(action))
+        return self.course_service.get_course_by_token(token)
 
 
 class Info(Resource):

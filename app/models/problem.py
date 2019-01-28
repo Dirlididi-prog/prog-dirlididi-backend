@@ -2,6 +2,7 @@ from flask_restful import fields
 from db import db
 from util import key_generator
 from datetime import datetime
+from exceptions import Unauthorized
 
 class ProblemTest(db.Model):
     ''' Represents a test for a problem '''
@@ -35,6 +36,8 @@ class Problem(db.Model):
 
     required_attributes = ["name", "description", "tests"]
 
+    not_updateable = ["key", "created", "solutions", "courses", "owner", "publish", "publish_request"]
+
     key = db.Column(db.String(9), default=key_generator, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text, nullable=False)
@@ -53,9 +56,14 @@ class Problem(db.Model):
     def tags(self):
         return self._tags if self._tags else []
 
+    @tags.setter
+    def tags(self, tags):
+        self._tags = tags
+
     api_fields = {
         "key": fields.String,
         "name": fields.String,
+        "owner": fields.Integer,
         "description": fields.String,
         "tip": fields.String,
         "publish": fields.Boolean,
@@ -72,6 +80,20 @@ class Problem(db.Model):
         else:
             self._tags = tags
 
+    def update(self, data):
+        for attr in data.keys():
+            if attr == "tests":
+                self.delete_all_tests()
+                self.add_tests(data[attr])
+            elif attr not in self.not_updateable:
+                self.__setattr__(attr, data[attr])
+        db.session.commit()
+
+    def delete_all_tests(self):
+        for test in self.tests:
+            db.session.delete(test)
+        db.session.commit()
+
     def add_tests(self, tests):
         for test in tests:
             name = test.get('name')
@@ -82,6 +104,15 @@ class Problem(db.Model):
             test_to_append = ProblemTest(name=name, tip=tip, input=input, output=output, publish=publish)
             self.tests.append(test_to_append)
             db.session.add(test_to_append)
+        db.session.commit()
+
+    def delete(self, user_id):
+        if user_id == self.owner:
+            self.delete_all_tests()
+            db.session.delete(self)
+            db.session.commit()
+        else:
+            raise Unauthorized("User with id {} is not the owner of this problem".format(user_id))
 
 class Solution(db.Model):
     ''' Represents a possible solution for a problem '''

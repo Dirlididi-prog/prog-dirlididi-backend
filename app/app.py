@@ -17,6 +17,7 @@ api = Api(app)
 jwt = JWTManager(app)
 cors = CORS(app)
 
+app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['JWT_SECRET_KEY'] = 'testing'
 define_api_callbacks(app)
 

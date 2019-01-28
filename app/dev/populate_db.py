@@ -86,7 +86,7 @@ def populate():
 
     for problem in problems:
         authed_request(requests.post, 'http://localhost:5000/problem', problem, jwt1)
-        sleep(0.05)
+        sleep(0.01)
 
     for i in range(45):
         print(authed_request(requests.post, 'http://localhost:5000/admin/publish-request', {"id": i, "action": "accept"}, jwt1).json().get('name'))

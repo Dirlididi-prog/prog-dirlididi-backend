@@ -1,10 +1,13 @@
 from db import db
 from flask_restful import fields
 from util import key_generator
+from exceptions import Unauthorized
 
 class Course(db.Model):
 
     required_attributes = ["name", "description"]
+
+    not_updateable = ['_id', 'owner', 'members', '_members', 'problems', '_problems', 'token']
 
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
@@ -39,6 +42,12 @@ class Course(db.Model):
 
     }
 
+    def update(self, data):
+        for attr in data.keys():
+            if attr not in self.not_updateable:
+                self.__setattr__(attr, data[attr])
+        db.session.commit()
+
     def add_member(self, member):
         participation = CourseParticipation(user_id=member._id, user=member)
         if participation not in self._members:
@@ -61,6 +70,14 @@ class Course(db.Model):
     def set_problems(self, problems):
         self._problems = problems
     
+    def delete(self, user_id):
+        if user_id == self.owner:
+            for participation in self._members:
+                db.session.delete(participation)
+            db.session.delete(self)
+            db.session.commit()
+        else:
+            raise Unauthorized("User with id {} is not the owner of this course".format(user_id))
 
 
 class CourseParticipation(db.Model):
