@@ -20,6 +20,7 @@ class ProblemService(object):
         if problem.owner != user_id:
             raise Unauthorized("User with id {} is not owner of this problem".format(user_id))
         problem.update(data)
+        db.session.commit()
         return problem
     
     def get_publish_request_by_id(self, id):

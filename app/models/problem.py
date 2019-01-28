@@ -104,7 +104,6 @@ class Problem(db.Model):
             test_to_append = ProblemTest(name=name, tip=tip, input=input, output=output, publish=publish)
             self.tests.append(test_to_append)
             db.session.add(test_to_append)
-        db.session.commit()
 
     def delete(self, user_id):
         if user_id == self.owner:
