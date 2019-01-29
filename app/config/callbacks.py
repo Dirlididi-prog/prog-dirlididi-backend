@@ -1,4 +1,4 @@
-from flask import request, jsonify, redirect, url_for
+from flask import request, jsonify
 from exceptions import DirlididiBaseException, MissingAttribute, Unauthorized
 from functools import wraps
 from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
@@ -35,13 +35,13 @@ class verify_attributes(object):
 def google_auth_required(f):
     def wrapper(*args, **kwargs):
         if not google.authorized:
-            return redirect(url_for("google.login"))
+            raise Unauthorized("User is not logged in")
         try:
             resp = google.get("/oauth2/v2/userinfo")
             if resp.ok:
                 return f(*args, **kwargs)
             else:
-                return redirect(url_for("google.login"))
+                raise Unauthorized("Login error")
         except TokenExpiredError:
-            return redirect(url_for("google.login"))
+            raise Unauthorized("Token has expired")
     return wrapper
