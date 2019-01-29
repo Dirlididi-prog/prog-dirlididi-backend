@@ -4,6 +4,9 @@ import json
 from threading import Thread
 from time import sleep
 from services.user_service import UserService
+from services.problem_service import ProblemService
+from services.course_service import CourseService
+
 
 class Populator(Thread):
 
@@ -11,42 +14,22 @@ class Populator(Thread):
         sleep(10)
         populate()
 
-def authed_request(action, url, data, jwt):
-    return action(url, headers={"Authorization": "Bearer {}".format(jwt)},
-        json=data)
-
 
 def populate():
     user_payload = {
         "email": "matheus@mat.com",
-        "password": "010101",
         "name": "Matheus Melo"
     }
 
-    UserService().create_user(email="matheus@mat.com", password="010101", name="Matheus Melo", admin=True)
+    user_service = UserService()
+    course_service = CourseService()
+    problem_service = ProblemService()
 
-    user2 = {
-        "email": "charlin@charlle.com",
-        "password": "12345",
-        "name": "Charlle Dias"
-    }
+    user1 = UserService().create_user(email="matheus@mat.com", name="Matheus Melo", admin=True)
 
-    user3 = {
-        "email": "esdras@es.com",
-        "password": "789734",
-        "name": "Esdras Vidal"
-    }
+    user2 = UserService().create_user(email="charlin@charlle.com", name="Charlle Dias")
 
-    course1 = {
-        "name": "Algoritmo",
-        "description": "Curso básico de algoritmos"
-    }
-
-    course2_ = {
-        "name": "Python avançado",
-        "language": "python",
-        "description": "Curso abançado de Python"
-    }
+    user3 = UserService().create_user(email="esdras@es.com", name="Esdras Vidal")
 
     course3 = {
         "name": "Ruby para iniciantes",
@@ -61,35 +44,30 @@ def populate():
     }
 
 
-    jwt1 = requests.post('http://localhost:5000/auth', json=user_payload).json().get('jwt')
-    
-    user1_token = authed_request(requests.get, 'http://localhost:5000/user', None, jwt1).json().get('token')
-    user2_token = requests.post('http://localhost:5000/user', json=user2).json().get('token')
-    requests.post('http://localhost:5000/user', json=user3)
 
-    jwt2 = requests.post('http://localhost:5000/auth', json=user2).json().get('jwt')
-    jwt3 = requests.post('http://localhost:5000/auth', json=user3).json().get('jwt')
+    course1 = user1.create_course(name="Algoritmo", description="Curso básico de algoritmos")
+    course2 = user2.create_course(name="Python avançado", description="Curso avançado de Python", language="python")
+    course3 = user3.create_course(name="Ruby para iniciantes", language="ruby", description="Para você que tem pouca experiência na linguagem!")
+    course4 = user1.create_course(name="Python > Ruby", description="Falando apenas a verdade.", language="python")
 
-
-    course1 = authed_request(requests.post, 'http://localhost:5000/course', course1, jwt1).json()
-    course2 = authed_request(requests.post, 'http://localhost:5000/course', course4, jwt1).json()
-    authed_request(requests.post, 'http://localhost:5000/course', course3, jwt3).json()
-    authed_request(requests.post, 'http://localhost:5000/course', course2_, jwt2).json()
-
-    authed_request(requests.post, 'http://localhost:5000/course/token/{}'.format(course1['token']), {"action": "join"}, jwt2)
-    authed_request(requests.post, 'http://localhost:5000/course/token/{}'.format(course1['token']), {"action": "join"}, jwt3)
-
-    authed_request(requests.post, 'http://localhost:5000/course/token/{}'.format(course2['token']), {"action": "join"}, jwt1)
+    course1.add_member(user2)
+    course1.add_member(user3)
+    course2.add_member(user1)
 
     with open('dev/problems.json') as f:
         problems = json.loads(f.read())
 
     for problem in problems:
-        authed_request(requests.post, 'http://localhost:5000/problem', problem, jwt1)
-        sleep(0.01)
+        name = problem.get('name')
+        description = problem.get('description')
+        tip = problem.get('tip')
+        publish = True
+        tests = problem.get('tests')
+        tags = problem.get('tags')
+        print(user_service.add_problem(id=1, name=name, description=description, tip=tip, publish=publish, tests=tests, tags=None).name)
 
     for i in range(45):
-        print(authed_request(requests.post, 'http://localhost:5000/admin/publish-request', {"id": i, "action": "accept"}, jwt1).json().get('name'))
+        problem = problem_service.accept_publish_request(i+1)
 
     problems = requests.get('http://localhost:5000/problem').json()
 
@@ -97,21 +75,19 @@ def populate():
 
     payload = {
         "key": problem['key'],
-        "token": user1_token,
+        "token": user1.token,
         "code": "print('Hello Dirlididi!')",
         "tests": [{"id": problem['tests'][i]['id'], 
                         "output": problem['tests'][i]['output']} for i in range(len(problem['tests']))]
     }
 
     for i in range(3):
-        authed_request(requests.post, 'http://localhost:5000/solve', payload, jwt1)
+        requests.post('http://localhost:5000/solve', json=payload)
 
-    payload['token'] = user2_token
+    payload['token'] = user2.token
 
     for i in range(2):
-        authed_request(requests.post, 'http://localhost:5000/solve', payload, jwt3)
-
-
+        requests.post('http://localhost:5000/solve', json=payload)
 
     if len(requests.get('http://localhost:5000/problem').json()) == len(problems):
         print("Database populated successfully.")

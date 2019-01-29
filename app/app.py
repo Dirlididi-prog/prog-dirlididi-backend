@@ -15,7 +15,7 @@ SECRET_KEY = environ['SECRET_KEY']
 CLIENT_ID = environ['CLIENT_ID']
 CLIENT_SECRET = environ['CLIENT_SECRET']
 
-POPULATE = False
+POPULATE = True
 
 app = Flask(__name__)
 api = Api(app)

@@ -54,7 +54,7 @@ class User(db.Model):
     def try_solution(self, problem_key, code, tests):
         return self.problem_service.create_solution(self, problem_key, code, tests)
     
-    def create_course(self, name, description, language, problems):
+    def create_course(self, name, description, language=None, problems=None):
         if problems:
             course = Course(name=name, description=description, language=language, _problems=problems)
         else:
