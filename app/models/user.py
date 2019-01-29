@@ -15,7 +15,8 @@ class User(db.Model):
     name = db.Column(db.String(50))
     token = db.Column(db.String, default=key_generator, nullable=False, unique=True)
     email = db.Column(db.String(50), nullable=False, unique=True)
-    password = db.Column(db.String(128), nullable=False)
+    auth_email = db.Column(db.String(100), db.ForeignKey('user_auth.email'))
+    auth = db.relationship('UserAuth', foreign_keys=[auth_email])
     admin = db.Column(db.Boolean, default=False, nullable=False)
     owned_problems = db.relationship('Problem')
     owned_courses = db.relationship('Course')
@@ -63,3 +64,10 @@ class User(db.Model):
         db.session.commit()
         course.add_member(self)
         return course
+
+
+class UserAuth(db.Model):
+    
+    email = db.Column(db.String(100), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user._id'))
+    user = db.relationship('User', foreign_keys=[user_id])

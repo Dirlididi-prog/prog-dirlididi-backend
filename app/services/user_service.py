@@ -1,16 +1,16 @@
 from db import db
-from models.user import User
+from models.user import User, UserAuth
 from util import hash_password
 from exceptions import NotFound
+from flask_dance.contrib.google import google
 
 class UserService(object):
 
     def get_all(self):
         return User.query.all()
 
-    def create_user(self, name, email, password, admin=False):
-        password = hash_password(password)
-        user = User(name=name, email=email, password=password, admin=admin)
+    def create_user(self, name, email, admin=False):
+        user = User(name=name, email=email, admin=admin)
         db.session.add(user)
         db.session.commit()
         return user

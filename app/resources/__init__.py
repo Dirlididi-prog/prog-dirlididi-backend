@@ -7,9 +7,9 @@ from models.user import User
 from services.course_service import CourseService
 from services.problem_service import ProblemService
 from services.user_service import UserService
-from flask_jwt_extended import get_jwt_identity, jwt_required
 from exceptions import MissingAttribute, Unauthorized, BadRequest
-from config.callbacks import verify_attributes
+from config.callbacks import verify_attributes, google_auth_required
+from util.auth import get_auth_user, get_auth_user_id
 
 class ProblemDetail(Resource):
 
@@ -19,10 +19,10 @@ class ProblemDetail(Resource):
     def get(self, key):
         return self.problem_service.get_problem_by_key(key)
 
-    @jwt_required
+    @google_auth_required
     @marshal_with(Problem.api_fields)
     def put(self, key):
-        user_id = get_jwt_identity()
+        user_id = get_auth_user_id()
         return self.problem_service.update_problem(user_id, key, request.get_json())
     
     def delete(self, key):
@@ -40,11 +40,11 @@ class ProblemList(Resource):
         name = request.args.get('name')
         return self.problem_service.get_all_public(name)
 
+    @google_auth_required
     @verify_attributes(Course.required_attributes)
-    @jwt_required
     @marshal_with(Problem.api_fields)
     def post(self):
-        id = get_jwt_identity()
+        id = get_auth_user_id()
         data = request.get_json()
         name = data.get('name')
         description = data.get('description')
@@ -59,36 +59,19 @@ class UserAuth(Resource):
 
     user_service = UserService()
 
-    @verify_attributes(['email', 'password'])
+    @google_auth_required
+    @marshal_with(User.api_fields)
     def post(self):
-        """ Returns the JWT access token if username and password match to a
-        registered user or errors if they doesn't
-        """
-        
-        email = request.json.get('email', None)
-        password = request.json.get('password', None)
-
-        if not email or not password:
-            raise MissingAttribute("Missing email or password field")
-
-        authenticated = self.user_service.authenticate_user(email, password)
-
-        if not authenticated:
-            raise Unauthorized("Bad username or password")
-
-        user = self.user_service.get_user_by_email(email)
-        access_token = create_access_token(identity=user._id)
-
-        return {"message": "User authenticated successfully" ,"jwt" : access_token}
+        return get_auth_user()
 
 class UserDetail(Resource):
 
     user_service = UserService()
 
-    @jwt_required
+    @google_auth_required
     @marshal_with(User.api_fields)
     def get(self):
-        id = get_jwt_identity()
+        id = get_auth_user_id()
         return self.user_service.get_user_by_id(id)
 
     @verify_attributes(User.required_attributes)
@@ -116,7 +99,7 @@ class SolveProblem(Resource):
         solution = self.user_service.try_solution(user_token, problem_key, code, tests)
         return solution
     
-    @jwt_required
+    @google_auth_required
     @marshal_with(Solution.api_fields)
     def get(self):
         return Solution.query.all()
@@ -127,10 +110,10 @@ class CourseCRUD(Resource):
     course_service = CourseService()
 
     @verify_attributes(Course.required_attributes)
-    @jwt_required
+    @google_auth_required
     @marshal_with(Course.api_fields)
     def post(self):
-        user_id = get_jwt_identity()
+        user_id = get_auth_user_id()
         data = request.get_json()
         name = data.get('name')
         description = data.get('description')
@@ -147,9 +130,9 @@ class UserCourses(Resource):
 
     course_service = CourseService()
 
-    @jwt_required
+    @google_auth_required
     def get(self):
-        user_id = get_jwt_identity()
+        user_id = get_auth_user_id()
         return self.course_service.get_all(user_id)
 
 
@@ -166,10 +149,10 @@ class CourseIdDetail(Resource):
         return self.course_service.get_course_by_id(id)
     
     @verify_attributes(['action'])
-    @jwt_required
+    @google_auth_required
     @marshal_with(Course.api_fields)
     def post(self, id):
-        user_id = get_jwt_identity()
+        user_id = get_auth_user_id()
         data = request.get_json()
         action = data.get('action')
         if action == self.JOIN_ACTION:
@@ -179,15 +162,15 @@ class CourseIdDetail(Resource):
         else:
             raise BadRequest("'{}' action is not valid".format(action))
 
-    @jwt_required
+    @google_auth_required
     @marshal_with(Course.api_fields)
     def put(self, id):
-        user_id = get_jwt_identity()
+        user_id = get_auth_user_id()
         return self.course_service.update_course(user_id, request.get_json(), id=id)
 
-    @jwt_required
+    @google_auth_required
     def delete(self, id):
-        user_id = get_jwt_identity()
+        user_id = get_auth_user_id()
         self.course_service.delete_course(user_id, id)
         return {}
 
@@ -253,11 +236,11 @@ class AdminPublishRequests(Resource):
     def get(self):
         return self.problem_service.get_all_publish_requests()
     
-    @jwt_required
+    @google_auth_required
     @verify_attributes(["action"])
     @marshal_with(Problem.api_fields)
     def post(self):
-        user_id = get_jwt_identity()
+        user_id = get_auth_user_id()
         data = request.get_json()
         pr_id = data.get('id')
         action = data.get('action')
