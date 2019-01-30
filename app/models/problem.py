@@ -10,7 +10,7 @@ class ProblemTest(db.Model):
     required_attributes = ["input", "output"]
 
     _id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
+    description = db.Column(db.String(50))
     tip = db.Column(db.String(50), nullable=True)
     publish = db.Column(db.Boolean(), default=False, nullable=False)
     input = db.Column(db.String(50))
@@ -22,7 +22,7 @@ class ProblemTest(db.Model):
 
     api_fields = {
         "key": fields.Integer(attribute="_id"),
-        "name":fields.String,
+        "description":fields.String,
         "tip":fields.String,
         "input": fields.String,
         "publish": fields.Boolean,
@@ -97,12 +97,12 @@ class Problem(db.Model):
 
     def add_tests(self, tests):
         for test in tests:
-            name = test.get('name')
+            description = test.get('description')
             tip = test.get('tip')
             input = test.get('input')
             output = test.get('output')
             publish = test.get('publish')
-            test_to_append = ProblemTest(name=name, tip=tip, input=input, output=output, publish=publish)
+            test_to_append = ProblemTest(description=description, tip=tip, input=input, output=output, publish=publish)
             self.tests.append(test_to_append)
             db.session.add(test_to_append)
 
