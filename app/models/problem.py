@@ -21,6 +21,7 @@ class ProblemTest(db.Model):
     
 
     api_fields = {
+        "key": fields.Integer(attribute="_id"),
         "name":fields.String,
         "tip":fields.String,
         "input": fields.String,

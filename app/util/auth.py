@@ -1,4 +1,5 @@
 from models.user import UserAuth
+from flask import redirect, url_for
 from flask_dance.contrib.google import google
 from services.user_service import UserService
 from db import db
@@ -12,9 +13,12 @@ def get_auth_user():
     email = userinfo['email']
     auth = UserAuth.query.get(email)
     if auth:
-        return auth.user._id
+        return auth.user
     user = UserService().create_user(name, email)
     auth = UserAuth(email=email, user=user)
     db.session.add(auth)
     db.session.commit()
     return user
+
+def redirect_to_google_login():
+    return redirect(url_for('google.login'))

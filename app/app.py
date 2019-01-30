@@ -30,7 +30,8 @@ blueprint = make_google_blueprint(
         "https://www.googleapis.com/auth/plus.me",
         "https://www.googleapis.com/auth/userinfo.email",
         "https://www.googleapis.com/auth/userinfo.profile"
-    ]
+    ],
+    redirect_url="http://www.apirequest.io/"
 )
 app.register_blueprint(blueprint, url_prefix="/login")
 
