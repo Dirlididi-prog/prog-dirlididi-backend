@@ -1,8 +1,7 @@
 from flask import request, jsonify
-from exceptions import DirlididiBaseException, MissingAttribute, Unauthorized
+from exceptions import DirlididiBaseException, MissingAttribute
 from functools import wraps
-from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
-from flask_dance.contrib.google import google
+
 
 def define_api_callbacks(app):
 
@@ -31,17 +30,3 @@ class verify_attributes(object):
             return f(*args, **kwargs)
     
         return wrapper
-
-def google_auth_required(f):
-    def wrapper(*args, **kwargs):
-        if not google.authorized:
-            raise Unauthorized("User is not logged in")
-        try:
-            resp = google.get("/oauth2/v2/userinfo")
-            if resp.ok:
-                return f(*args, **kwargs)
-            else:
-                raise Unauthorized("Login error")
-        except TokenExpiredError:
-            raise Unauthorized("Token has expired")
-    return wrapper

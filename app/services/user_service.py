@@ -2,7 +2,6 @@ from db import db
 from models.user import User, UserAuth
 from util import hash_password
 from exceptions import NotFound
-from flask_dance.contrib.google import google
 
 class UserService(object):
 
@@ -14,12 +13,6 @@ class UserService(object):
         db.session.add(user)
         db.session.commit()
         return user
-    
-    def authenticate_user(self, email, password):
-        user = self.get_user_by_email(email)
-        if user:
-            return user.password == hash_password(password)
-        return False
     
     def get_user_by_email(self, email):
         user =  User.query.filter_by(email=email).first()

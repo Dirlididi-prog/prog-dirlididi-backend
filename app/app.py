@@ -1,7 +1,6 @@
 from sys import argv, exit
 from os import environ
 from flask import Flask
-from flask_dance.contrib.google import make_google_blueprint
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
@@ -12,8 +11,6 @@ from resources import UserDetail, SolveProblem, CourseCRUD, CourseIdDetail
 from resources import CourseTokenDetail, UserCourses, Info, AdminPublishRequests
 
 SECRET_KEY = environ['SECRET_KEY']
-CLIENT_ID = environ['CLIENT_ID']
-CLIENT_SECRET = environ['CLIENT_SECRET']
 
 POPULATE = True
 
@@ -22,21 +19,8 @@ api = Api(app)
 jwt = JWTManager(app)
 cors = CORS(app)
 
-app.secret_key = SECRET_KEY
-blueprint = make_google_blueprint(
-    client_id=CLIENT_ID,
-    client_secret=CLIENT_SECRET,
-    scope=[
-        "https://www.googleapis.com/auth/plus.me",
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile"
-    ],
-    redirect_url="http://www.apirequest.io/"
-)
-app.register_blueprint(blueprint, url_prefix="/login")
-
 app.config['PROPAGATE_EXCEPTIONS'] = True
-app.config['JWT_SECRET_KEY'] = 'testing'
+app.config['JWT_SECRET_KEY'] = SECRET_KEY
 define_api_callbacks(app)
 
 api.add_resource(ProblemList, '/problem')
