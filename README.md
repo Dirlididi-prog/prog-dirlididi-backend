@@ -1,5 +1,5 @@
 # Dirlididi API
-
+[![Build Status](https://travis-ci.com/Dirlididi-prog/prog-dirlididi-backend.svg?branch=master)](https://travis-ci.com/Dirlididi-prog/prog-dirlididi-backend)
 ## Populate DB
 The DB is automatically populated with problems/courses/users when `POPULATE = True` in `app.py`.
 

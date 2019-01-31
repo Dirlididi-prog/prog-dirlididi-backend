@@ -11,7 +11,8 @@ class Course(db.Model):
 
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-    owner = db.Column(db.Integer, db.ForeignKey('user._id'))
+    owner_id = db.Column(db.Integer, db.ForeignKey('user._id'))
+    owner = db.relationship('User')
     _members = db.relationship('CourseParticipation')
     _problems = db.relationship('Problem')
     token = db.Column(db.String(9), default=key_generator, unique=True)
@@ -34,7 +35,10 @@ class Course(db.Model):
     api_fields = {
         "id": fields.Integer(attribute='_id'),
         "name": fields.String,
-        "owner": fields.Integer,
+        "owner": {
+            "id": fields.Integer(attribute="owner._id"),
+            "name": fields.String(attribute="owner.name")
+        },
         "members": fields.List(fields.String),
         "token": fields.String,
         "problems": fields.List(fields.String),
