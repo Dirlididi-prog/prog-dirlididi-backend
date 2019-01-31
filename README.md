@@ -1,7 +1,7 @@
 # Dirlididi API
 
 ## Populate DB
-The DB is automatically populated with problems/courses/users when `POPULATE = True in `app.py`.
+The DB is automatically populated with problems/courses/users when `POPULATE = True` in `app.py`.
 
 ## Endpoints
 

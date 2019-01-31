@@ -10,7 +10,7 @@ from resources import ProblemDetail, ProblemList, UserAuth
 from resources import UserDetail, SolveProblem, CourseCRUD, CourseIdDetail
 from resources import CourseTokenDetail, UserCourses, Info, AdminPublishRequests
 
-SECRET_KEY = environ['SECRET_KEY']
+
 
 POPULATE = True
 
@@ -20,7 +20,6 @@ jwt = JWTManager(app)
 cors = CORS(app)
 
 app.config['PROPAGATE_EXCEPTIONS'] = True
-app.config['JWT_SECRET_KEY'] = SECRET_KEY
 define_api_callbacks(app)
 
 api.add_resource(ProblemList, '/problem')
@@ -44,6 +43,8 @@ if __name__ == "__main__":
         code = pytest.main(['tests'])
         exit(code)
     else:
+        SECRET_KEY = environ['SECRET_KEY']
+        app.config['JWT_SECRET_KEY'] = SECRET_KEY
         if POPULATE:
             from dev.populate_db import Populator
             Populator().start()
