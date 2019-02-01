@@ -62,7 +62,6 @@ class ProblemService(object):
     def check_response(self, problem, results):
         ''' Returns the test results for a solution '''
         result = ""
-        problem = self.get_problem_by_key(problem)
         tests = sorted(problem.tests, key=lambda x: x._id)
         results = sorted(results, key=lambda x: int(x.get('id')))
 
@@ -78,8 +77,9 @@ class ProblemService(object):
         return result
 
     def create_solution(self, user, problem_key, code, tests):
-        results = self.check_response(problem_key, tests)
-        solution = Solution(user=user._id, problem=problem_key, code=code, tests=tests, result=results, passed="f" not in results)
+        problem = self.get_problem_by_key(problem_key)
+        results = self.check_response(problem, tests)
+        solution = Solution(user=user, problem=problem, code=code, tests=tests, result=results, passed="f" not in results)
         db.session.add(solution)
         db.session.commit()
         return solution

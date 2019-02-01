@@ -1,7 +1,7 @@
 from models.course import Course
 from services.user_service import UserService
 from services.problem_service import ProblemService
-from exceptions import NotFound
+from exceptions import NotFound, Unauthorized
 
 
 class CourseService(object):
@@ -62,7 +62,7 @@ class CourseService(object):
     def update_course(self, user_id, data, id):
         course = self.get_course_by_id(id)
         
-        if course.owner != user_id:
+        if course.owner_id != user_id:
             raise Unauthorized("User with id {} is not owner of this course".format(user_id))
 
         if "problems" in data:

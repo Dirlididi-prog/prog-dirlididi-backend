@@ -52,7 +52,11 @@ class User(db.Model):
         return problem
 
     def try_solution(self, problem_key, code, tests):
-        return self.problem_service.create_solution(self, problem_key, code, tests)
+        solution = self.problem_service.create_solution(self, problem_key, code, tests)
+        for participation in self.course_participations:
+            participation.course.add_solution(solution)
+        db.session.commit()
+        return solution
     
     def create_course(self, name, description, language=None, problems=None):
         if problems:

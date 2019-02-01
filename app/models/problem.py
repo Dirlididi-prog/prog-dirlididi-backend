@@ -122,10 +122,14 @@ class Solution(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     tests = db.Column(db.PickleType, nullable=False)
     code = db.Column(db.Text, nullable=False)
-    user = db.Column(db.Integer, db.ForeignKey('user._id'))
-    problem = db.Column(db.ForeignKey('problem.key'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user._id'))
+    user = db.relationship('User')
+    problem_key = db.Column(db.ForeignKey('problem.key'))
+    problem = db.relationship('Problem')
     result = db.Column(db.String, nullable=False)
     passed = db.Column(db.Boolean)
+    courses = db.relationship('SolutionCourseRelation')
+
 
     api_fields = {
         "tests": {"key": fields.Integer, "output": fields.String},

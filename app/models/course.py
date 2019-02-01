@@ -3,16 +3,37 @@ from flask_restful import fields
 from util import key_generator
 from exceptions import Unauthorized
 
+class SolutionCourseRelation(db.Model):
+    _id = db.Column(db.Integer, primary_key=True)
+    course = db.relationship('Course')
+    course_id = db.Column(db.Integer, db.ForeignKey('course._id'))
+    solution = db.relationship('Solution')
+    solution_id = db.Column(db.Integer, db.ForeignKey('solution._id'))
+
+    api_fields = {
+        "solution": fields.Integer(attribute="solution_id"),
+        "user": {
+            "id": fields.Integer(attribute="solution.user._id"),
+            "name": fields.String(attribute="solution.user.name"),
+        },
+        "course": {
+            "id": fields.Integer(attribute="course_id"),
+            "name": fields.String(attribute="course.name")
+        },
+        "problem": fields.String(attribute="solution.problem.key")
+    }
+
 class Course(db.Model):
 
     required_attributes = ["name", "description"]
 
-    not_updateable = ['_id', 'owner', 'members', '_members', 'problems', '_problems', 'token']
+    not_updateable = ['_id', 'owner', 'members', '_members', 'problems', '_problems', 'token', 'solutions']
 
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey('user._id'))
     owner = db.relationship('User')
+    solutions = db.relationship('SolutionCourseRelation')
     _members = db.relationship('CourseParticipation')
     _problems = db.relationship('Problem')
     token = db.Column(db.String(9), default=key_generator, unique=True)
@@ -43,7 +64,7 @@ class Course(db.Model):
         "token": fields.String,
         "problems": fields.List(fields.String),
         "language": fields.String,
-
+        "solutions": fields.List(fields.Nested(SolutionCourseRelation.api_fields))
     }
 
     def update(self, data):
@@ -74,6 +95,11 @@ class Course(db.Model):
     def set_problems(self, problems):
         self._problems = problems
     
+    def add_solution(self, solution):
+        if solution.problem.key in self.problems:
+            solution_relation = SolutionCourseRelation(course=self, solution=solution)
+            self.solutions.append(solution_relation)
+
     def delete(self, user_id):
         if user_id == self.owner:
             for participation in self._members:
